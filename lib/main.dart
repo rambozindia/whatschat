@@ -1,8 +1,9 @@
 import 'dart:io';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_open_whatsapp/flutter_open_whatsapp.dart';
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:flutter/material.dart';
 
 void main() {
   Admob.initialize(getAppId());
