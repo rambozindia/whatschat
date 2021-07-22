@@ -80,12 +80,6 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "flutter_open_whatsapp",
-      "rootUri": "file:///G:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_open_whatsapp-0.1.2",
-      "packageUri": "lib/",
-      "languageVersion": "2.1"
-    },
-    {
       "name": "flutter_test",
       "rootUri": "file:///G:/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -118,6 +112,12 @@
     {
       "name": "modal_bottom_sheet",
       "rootUri": "file:///G:/flutter/.pub-cache/hosted/pub.dartlang.org/modal_bottom_sheet-2.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "open_whatsapp",
+      "rootUri": "file:///G:/flutter/.pub-cache/hosted/pub.dartlang.org/open_whatsapp-0.0.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -254,7 +254,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2021-07-22T20:04:46.350706Z",
+  "generated": "2021-07-22T21:32:03.619706Z",
   "generator": "pub",
   "generatorVersion": "2.13.4"
 }

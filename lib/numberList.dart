@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:open_whatsapp/open_whatsapp.dart';
 
 import 'package:localstorage/localstorage.dart';
 
@@ -29,6 +30,10 @@ class _MyNumberListState extends State<NumberList> {
     setState(() {
       mobNumbers = json.decode(storage.getItem('numbers')) ?? [];
     });
+  }
+
+  _sendMessage(contactNumber) {
+    if (initialized) FlutterOpenWhatsapp.sendSingleMessage(contactNumber, "");
   }
 
   Widget build(BuildContext context) {
@@ -82,12 +87,18 @@ class _MyNumberListState extends State<NumberList> {
                                 padding: const EdgeInsets.all(8),
                                 itemCount: mobNumbers.length,
                                 itemBuilder: (BuildContext context, int index) {
-                                  return Container(
-                                    height: 50,
-                                    color: Colors.orange,
-                                    child: Center(
-                                        child: Text(mobNumbers[index]['mob'])),
-                                  );
+                                  return GestureDetector(
+                                      child: Container(
+                                        height: 50,
+                                        color: Colors.orange,
+                                        child: Center(
+                                            child:
+                                                Text(mobNumbers[index]['mob'])),
+                                      ),
+                                      onTap: () {
+                                        _sendMessage(mobNumbers[index]['mob']);
+                                        print("object========");
+                                      });
                                 },
                                 separatorBuilder:
                                     (BuildContext context, int index) =>

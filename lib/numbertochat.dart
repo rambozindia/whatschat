@@ -2,12 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_open_whatsapp/flutter_open_whatsapp.dart';
+import 'package:open_whatsapp/open_whatsapp.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:localstorage/localstorage.dart';
-
-import 'numberList.dart';
 
 class numberToChat extends StatefulWidget {
   numberToChat({Key? key}) : super(key: key);
@@ -95,7 +93,7 @@ class _numberToChatState extends State<numberToChat> {
       },
       onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
         print('$ad onAdFailedToShowFullScreenContent: $error');
-        _sendMessage();
+        // _sendMessage();
         ad.dispose();
         _createInterstitialAd();
       },
@@ -248,8 +246,8 @@ class _numberToChatState extends State<numberToChat> {
                   ElevatedButton(
                     child: Text('Message on WhatsApp'),
                     onPressed: () {
-                      _sendMessage();
-                      // _showInterstitialAd();
+                      //_sendMessage();
+                      _showInterstitialAd();
                     },
                     style: ElevatedButton.styleFrom(
                         primary: Colors.deepOrange,

@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   curved_navigation_bar: ^1.0.1
-  flutter_open_whatsapp: ^0.1.2
+  open_whatsapp: ^0.0.1
   country_code_picker: ^2.0.2
   google_mobile_ads: ^0.13.2
   localstorage: ^4.0.0+1
