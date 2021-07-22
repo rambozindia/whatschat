@@ -3,7 +3,7 @@
    <application
         android:label="Number to WhatsChat"
         android:icon="@mipmap/ic_launcher">
-        <meta-data 
+         <meta-data 
               android:name="com.google.android.gms.ads.APPLICATION_ID" 
               android:value="ca-app-pub-5924361002999470~6378678384"/>
         <activity

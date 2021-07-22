@@ -1,325 +1,127 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_open_whatsapp/flutter_open_whatsapp.dart';
-import 'package:admob_flutter/admob_flutter.dart';
-import 'package:country_code_picker/country_code_picker.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+// import 'package:flutter_launch/flutter_launch.dart';
+
+import 'numbertochat.dart';
+import 'numberList.dart';
 
 void main() {
-  Admob.initialize(getAppId());
-  runApp(AdExampleApp());
+  runApp(MyApp());
 }
 
-class AdExampleApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      title: 'Number to WhatsChat',
       theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // Try running your application with "flutter run". You'll see the
+        // application has a blue toolbar. Then, without quitting the app, try
+        // changing the primarySwatch below to Colors.green and then invoke
+        // "hot reload" (press "r" in the console where you ran "flutter run",
+        // or simply save your changes to "hot reload" in a Flutter IDE).
+        // Notice that the counter didn't reset back to zero; the application
+        // is not restarted.
         primarySwatch: Colors.blue,
-        buttonTheme: ButtonThemeData(
-          textTheme: ButtonTextTheme.primary,
-          buttonColor: Colors.blue,
-        ),
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Number to WhatsChat",
-          ),
-        ),
-        body: AdsPage(),
-      ),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class AdsPage extends StatefulWidget {
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key? key, required this.title}) : super(key: key);
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
+  final String title;
+
   @override
-  AdsPageState createState() => AdsPageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-//const String testDevice = 'd99973b5-b12d-407f-b1ec-cadd8f9c041e'; // OnePlus 6T
-const String testDevice = '62204e47-0a2c-4df6-b3e0-89e1aac39cdb';
-
-class AdsPageState extends State<AdsPage> {
-  /// All widget ads are stored in this variable. When a button is pressed, its
-  /// respective ad widget is set to this variable and the view is rebuilt using
-  /// setState().
-  final _formKey = GlobalKey<FormState>();
-  final contactNumber = TextEditingController();
-  final message = TextEditingController();
-  bool _isInterstitialAdLoaded = false;
-  int countrycd = 91;
-
-  AdmobInterstitial interstitialAd;
-
-  Widget _currentAd = SizedBox(
-    width: 0.0,
-    height: 0.0,
-  );
-  Widget _currentAd2 = SizedBox(
-    width: 0.0,
-    height: 0.0,
-  );
-
-  @override
-  void initState() {
-    super.initState();
-
-    _showBannerAd();
-    _showNativeBannerAd();
-    _loadInterstitialAd();
-  }
-
-  void _loadInterstitialAd() {
-    interstitialAd = AdmobInterstitial(
-      adUnitId: getInterstitialAdUnitId(),
-      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-        if (event == AdmobAdEvent.closed) interstitialAd.load();
-        handleEvent(event, args, 'Interstitial');
-      },
-    );
-
-    interstitialAd.load();
-  }
-
-  void handleEvent(
-      AdmobAdEvent event, Map<String, dynamic> args, String adType) {
-    switch (event) {
-      case AdmobAdEvent.loaded:
-        print('New Admob $adType Ad loaded!');
-        _isInterstitialAdLoaded = true;
-        break;
-      case AdmobAdEvent.opened:
-        print('Admob $adType Ad opened!');
-        break;
-      case AdmobAdEvent.closed:
-        print('Admob $adType Ad closed!');
-        _sendMessage();
-        break;
-      case AdmobAdEvent.failedToLoad:
-        print('Admob $adType failed to load. :(');
-        _isInterstitialAdLoaded = false;
-        break;
-      default:
-        print(event);
-    }
-  }
-
-  void _onCountryChange(CountryCode countryCode) {
-    countrycd = int.parse(countryCode.toString());
-    print(countrycd);
-  }
-
-  _sendMessage() {
-    FlutterOpenWhatsapp.sendSingleMessage(
-        countrycd.toString() + contactNumber.text, message.text);
-  }
+class _MyHomePageState extends State<MyHomePage> {
+  int _page = 0;
+  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Flexible(
-          child: Align(
-            alignment: Alignment(0, -1.0),
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: _getMain(),
-            ),
-          ),
-          fit: FlexFit.tight,
-          flex: 4,
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+    return Scaffold(
+        bottomNavigationBar: CurvedNavigationBar(
+          key: _bottomNavigationKey,
+          index: 0,
+          height: 60.0,
+          items: <Widget>[
+            Icon(Icons.add, size: 30),
+            Icon(Icons.collections, size: 30),
+            Icon(Icons.history, size: 30),
+            Icon(Icons.perm_identity, size: 30),
+          ],
+          color: Colors.white,
+          buttonBackgroundColor: Colors.white,
+          backgroundColor: Colors.deepOrange,
+          animationCurve: Curves.easeInOut,
+          animationDuration: Duration(milliseconds: 300),
+          onTap: (index) {
+            setState(() {
+              _page = index;
+            });
+          },
+          letIndexChange: (index) => true,
         ),
-        // Column(children: <Widget>[
-        //   _nativeAd(),
-        //   // _nativeBannerAd(),
-        //   _nativeAd(),
-        // ],),
-        Flexible(
-          child: Align(
-            alignment: Alignment(0, 1.0),
-            child: _currentAd,
-          ),
-          fit: FlexFit.tight,
-          flex: 1,
-        )
+        body: IndexedStack(
+          index: _page,
+          children: <Widget>[
+            numberToChat(),
+            SampleScreen,
+            NumberList(),
+            SampleScreen,
+          ],
+        ));
+  }
+  // void whatsAppOpen() async {
+  //   await FlutterLaunch.launchWathsApp(
+  //       phone: "5534992016545", message: "Hello");
+  // }
+}
+
+Container SampleScreen = Container(
+  color: Colors.deepOrange,
+  child: Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text("Welcome".toString(), textScaleFactor: 5.0),
+        ElevatedButton(
+          child: Text('Set Permission'),
+          onPressed: () {
+            // final CurvedNavigationBarState? navBarState =
+            //     _bottomNavigationKey.currentState;
+            // navBarState?.setPage(1);
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => numberToChat()),
+            // );
+          },
+        ),
       ],
-    );
-  }
-
-  @override
-  void dispose() {
-    interstitialAd.dispose();
-    super.dispose();
-  }
-
-  Widget _getMain() {
-    return Form(
-      key: _formKey,
-      child: Center(
-        child: ListView(padding: EdgeInsets.all(10), children: <Widget>[
-          Row(
-            children: <Widget>[
-              CountryCodePicker(
-                onChanged: _onCountryChange,
-                // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
-                initialSelection: 'IN',
-                favorite: ['+91', 'IN'],
-                // optional. Shows only country name and flag
-                showCountryOnly: false,
-                // optional. Shows only country name and flag when popup is closed.
-                showOnlyCountryWhenClosed: false,
-                // optional. aligns the flag and the Text left
-                alignLeft: false,
-              ),
-              Expanded(
-                child: TextFormField(
-                  controller: contactNumber,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    hintText: 'Type number without country code',
-                  ),
-                  validator: (value) {
-                    if (value.isEmpty || value.length < 10) {
-                      return 'Please enter a valid number';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-            ],
-          ),
-          TextFormField(
-            controller: message,
-            maxLines: 6,
-            decoration: const InputDecoration(
-              hintText: 'Enter the message (optional)',
-            ),
-          ),
-          Align(
-            alignment: Alignment(0, 1.0),
-            child: _currentAd2,
-          ),
-          RaisedButton(
-            onPressed: () {
-              if (_formKey.currentState.validate()) {
-                _showInterstitialAd();
-              }
-            },
-            child: Text('Message on WhatsApp'),
-            color: Colors.lightBlue,
-            textColor: Colors.white,
-            padding: EdgeInsets.fromLTRB(9, 9, 9, 9),
-            splashColor: Colors.grey,
-          ),
-          Align(
-            alignment: Alignment(0, 1.0),
-            child: Text("Made love with India"),
-          ),
-        ]),
-      ),
-    );
-  }
-
-  _showInterstitialAd() {
-    if (_isInterstitialAdLoaded == true)
-      interstitialAd.show();
-    else {
-      _sendMessage();
-      print("Interstial Ad not yet loaded!");
-    }
-  }
-
-  _showBannerAd() {
-    setState(() {
-      _currentAd2 = AdmobBanner(
-        adUnitId: getBannerAdUnitId(),
-        adSize: AdmobBannerSize.BANNER,
-        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-          print("ADS ------------------");
-          print(args);
-        },
-      );
-    });
-  }
-
-  _showNativeBannerAd() {
-    setState(() {
-      _currentAd = AdmobBanner(
-        adUnitId: getNativedUnitId(),
-        adSize: AdmobBannerSize.SMART_BANNER,
-        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-          print("ADS ------------------");
-          print(args);
-        },
-      );
-    });
-  }
-
-  // _showNativeAd() {
-  //   setState(() {
-  //     _currentAd = _nativeAd();
-  //   });
-  // }
-
-  // Widget _nativeAd() {
-  //   return FacebookNativeAd(
-  //     placementId: "1815765095104804_3708593532488608",
-  //     adType: NativeAdType.NATIVE_AD,
-  //     width: double.infinity,
-  //     height: 300,
-  //     backgroundColor: Colors.blue,
-  //     titleColor: Colors.white,
-  //     descriptionColor: Colors.white,
-  //     buttonColor: Colors.deepPurple,
-  //     buttonTitleColor: Colors.white,
-  //     buttonBorderColor: Colors.white,
-  //     listener: (result, value) {
-  //       print("Native Ad: $result --> $value");
-  //     }
-  //   );
-  // }
-
-}
-
-String getAppId() {
-  if (Platform.isIOS) {
-    return 'ca-app-pub-5924361002999470~6378678384';
-  } else if (Platform.isAndroid) {
-    return 'ca-app-pub-5924361002999470~6378678384';
-  }
-  return null;
-}
-
-String getBannerAdUnitId() {
-  if (Platform.isIOS) {
-    return 'ca-app-pub-5924361002999470/2628163306';
-  } else if (Platform.isAndroid) {
-    return 'ca-app-pub-5924361002999470/2628163306';
-  }
-  return null;
-}
-
-String getNativedUnitId() {
-  //'ca-app-pub-5924361002999470/4345357040'  on admob for native
-  if (Platform.isIOS) {
-    return 'ca-app-pub-5924361002999470/4345357040';
-  } else if (Platform.isAndroid) {
-    return 'ca-app-pub-5924361002999470/2628163306';
-  }
-  return null;
-}
-
-String getInterstitialAdUnitId() {
-  if (Platform.isIOS) {
-    return 'ca-app-pub-5924361002999470/4978515543';
-  } else if (Platform.isAndroid) {
-    return 'ca-app-pub-5924361002999470/4978515543';
-  }
-  return null;
-}
+    ),
+  ),
+);

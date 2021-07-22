@@ -1,4 +1,4 @@
-# flutter_application_1
+# whatschat
 
 A new Flutter project.
 
