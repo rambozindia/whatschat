@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:permission_handler/permission_handler.dart';
 // import 'package:flutter_launch/flutter_launch.dart';
 
 import 'numbertochat.dart';
 import 'numberList.dart';
+import 'statusStartup.dart';
 
 void main() {
   runApp(MyApp());
@@ -90,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
           index: _page,
           children: <Widget>[
             numberToChat(),
-            SampleScreen,
+            statusStartup(),
             NumberList(),
             SampleScreen,
           ],
@@ -100,6 +102,12 @@ class _MyHomePageState extends State<MyHomePage> {
   //   await FlutterLaunch.launchWathsApp(
   //       phone: "5534992016545", message: "Hello");
   // }
+}
+
+checkpermission() async {
+  bool isShown =
+      await Permission.manageExternalStorage.shouldShowRequestRationale;
+  print(isShown);
 }
 
 Container SampleScreen = Container(
@@ -112,6 +120,7 @@ Container SampleScreen = Container(
         ElevatedButton(
           child: Text('Set Permission'),
           onPressed: () {
+            checkpermission();
             // final CurvedNavigationBarState? navBarState =
             //     _bottomNavigationKey.currentState;
             // navBarState?.setPage(1);

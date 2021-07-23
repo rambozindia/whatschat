@@ -246,7 +246,6 @@ class _numberToChatState extends State<numberToChat> {
                   ElevatedButton(
                     child: Text('Message on WhatsApp'),
                     onPressed: () {
-                      //_sendMessage();
                       _showInterstitialAd();
                     },
                     style: ElevatedButton.styleFrom(
