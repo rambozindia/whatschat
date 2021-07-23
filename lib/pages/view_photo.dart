@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:share/share.dart';
 
 class ViewPhotos extends StatefulWidget {
   final String imgPath;
@@ -96,7 +97,7 @@ class _ViewPhotosState extends State<ViewPhotos> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0.0,
+        elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
           color: Colors.indigo,
@@ -107,10 +108,12 @@ class _ViewPhotosState extends State<ViewPhotos> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Center(
-          child: ElevatedButton(
-            child: Text('Download'),
-            onPressed: () async {
-              _onLoading(true, "");
+          child: Row(
+            children: [
+              ElevatedButton.icon(
+                label: Text('Download', style: TextStyle(fontSize: 16.0)),
+                onPressed: () async {
+                  _onLoading(true, "");
 //                File originalImageFile1 = File(widget.imgPath);
 //
 //                Directory directory = await getExternalStorageDirectory();
@@ -123,43 +126,76 @@ class _ViewPhotosState extends State<ViewPhotos> {
 //                print(newFileName);
 //                await originalImageFile1.copy(newFileName);
 
-              Uri myUri = Uri.parse(widget.imgPath);
-              File originalImageFile = new File.fromUri(myUri);
-              Uint8List? bytes;
-              await originalImageFile.readAsBytes().then((value) {
-                bytes = Uint8List.fromList(value);
-                print('reading of bytes is completed');
-              }).catchError((onError) {
-                print('Exception Error while reading audio from path:' +
-                    onError.toString());
-              });
-              final result =
-                  await ImageGallerySaver.saveImage(Uint8List.fromList(bytes!));
-              print(result);
-              _onLoading(false,
-                  "If Image not available in gallary\n\nYou can find all images at");
-            },
-            style: ElevatedButton.styleFrom(
-                primary: Colors.deepOrange,
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                textStyle: TextStyle(fontSize: 20)),
+                  Uri myUri = Uri.parse(widget.imgPath);
+                  File originalImageFile = new File.fromUri(myUri);
+                  Uint8List? bytes;
+                  await originalImageFile.readAsBytes().then((value) {
+                    bytes = Uint8List.fromList(value);
+                    print('reading of bytes is completed');
+                  }).catchError((onError) {
+                    print('Exception Error while reading audio from path:' +
+                        onError.toString());
+                  });
+                  final result = await ImageGallerySaver.saveImage(
+                      Uint8List.fromList(bytes!));
+                  print(result);
+                  _onLoading(false,
+                      "If Image not available in gallary\n\nYou can find all images at");
+                },
+                icon: Icon(Icons.file_download),
+                style: ElevatedButton.styleFrom(
+                    primary: Colors.deepOrange,
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    textStyle: TextStyle(fontSize: 20)),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton.icon(
+                label: Text(
+                  'Share',
+                  style: TextStyle(fontSize: 16.0),
+                ), //`T
+                onPressed: () async {
+                  await Share.shareFiles([widget.imgPath],
+                      text: "Share from Number to WhatsChat");
+                },
+                icon: Icon(Icons.share),
+                style: ElevatedButton.styleFrom(
+                    primary: Colors.deepOrange,
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    textStyle: TextStyle(fontSize: 20)),
+              ),
+            ],
           ),
         ),
       ),
-      body: SizedBox.expand(
-        child: Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.center,
-              child: Hero(
-                tag: widget.imgPath,
-                child: Image.file(
-                  File(widget.imgPath),
-                  fit: BoxFit.cover,
+      body: Container(
+        color: Colors.deepOrange,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
+          child: Card(
+            elevation: 5,
+            child: ClipPath(
+              child: Container(
+                margin: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: SizedBox.expand(
+                  child: Stack(
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.center,
+                        child: Hero(
+                          tag: widget.imgPath,
+                          child: Image.file(
+                            File(widget.imgPath),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -105,9 +105,10 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 checkpermission() async {
-  bool isShown =
-      await Permission.manageExternalStorage.shouldShowRequestRationale;
-  print(isShown);
+  Map<Permission, PermissionStatus> statuses = await [
+    Permission.storage,
+  ].request();
+  print(statuses[Permission.storage]);
 }
 
 Container SampleScreen = Container(

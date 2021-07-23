@@ -31,8 +31,7 @@ class _StatusVideoState extends State<StatusVideo> {
         autoInitialize: true,
         looping: widget.looping,
         allowFullScreen: true,
-        aspectRatio: 6 / 9,
-        //autoPlay: true,
+        autoPlay: true,
         errorBuilder: (context, errorMessage) {
           return Center(
             child: Text(errorMessage),
@@ -43,6 +42,7 @@ class _StatusVideoState extends State<StatusVideo> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.only(left: 20.0, right: 20.0),
       padding: EdgeInsets.only(top: 0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

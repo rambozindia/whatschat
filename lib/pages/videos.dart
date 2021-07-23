@@ -25,6 +25,15 @@ class VideoListViewState extends State<VideoListView> {
       return Scaffold(
         appBar: AppBar(
           title: Text("Whatsapp Video Status"),
+          actions: <Widget>[], //<Widget>[]
+          backgroundColor: Colors.deepOrange,
+          elevation: 50.0,
+          leading: IconButton(
+            icon: Icon(Icons.shield),
+            tooltip: 'Menu Icon',
+            onPressed: () {},
+          ), //IconButton
+          brightness: Brightness.dark,
         ),
         body: Container(
           padding: EdgeInsets.only(bottom: 60.0),
@@ -40,6 +49,17 @@ class VideoListViewState extends State<VideoListView> {
       return Scaffold(
         appBar: AppBar(
           title: Text("Whatsapp Video Status"),
+          actions: <Widget>[], //<Widget>[]
+          backgroundColor: Colors.deepOrange,
+          elevation: 50.0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            tooltip: 'Menu Icon',
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ), //IconButton
+          brightness: Brightness.dark,
         ),
         body: VideoGrid(directory: _videoDir),
       );
@@ -59,11 +79,9 @@ class VideoGrid extends StatefulWidget {
 class _VideoGridState extends State<VideoGrid> {
   _getImage(videoPathUrl) async {
     //await Future.delayed(Duration(milliseconds: 500));
-    final uint8list = await VideoThumbnail.thumbnailData(
+    String? uint8list = await VideoThumbnail.thumbnailFile(
       video: videoPathUrl,
       imageFormat: ImageFormat.PNG,
-      // maxWidth:
-      //     128,
       quality: 10,
     );
     // String thumb = await Thumbnails.getThumbnail(
@@ -85,97 +103,95 @@ class _VideoGridState extends State<VideoGrid> {
     if (videoList != null) {
       if (videoList.length > 0) {
         return Container(
-          padding: EdgeInsets.only(bottom: 60.0),
-          child: GridView.builder(
-            itemCount: videoList.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 1, childAspectRatio: 8.0 / 8.0),
-            itemBuilder: (context, index) {
-              return Container(
-                padding: EdgeInsets.all(10.0),
-                child: InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (context) =>
-                            new PlayStatusVideo(videoList[index])),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        // Where the linear gradient begins and ends
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                        // Add one stop for each color. Stops should increase from 0 to 1
-                        stops: [0.1, 0.3, 0.5, 0.7, 0.9],
-                        colors: [
-                          // Colors are easy thanks to Flutter's Colors class.
-                          Color(0xffb7d8cf),
-                          Color(0xffb7d8cf),
-                          Color(0xffb7d8cf),
-                          Color(0xffb7d8cf),
-                          Color(0xffb7d8cf),
-                        ],
+          color: Colors.deepOrange,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
+            child: Card(
+              elevation: 5,
+              child: ClipPath(
+                child: GridView.builder(
+                  itemCount: videoList.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2, childAspectRatio: 1),
+                  itemBuilder: (context, index) {
+                    return Container(
+                      padding: EdgeInsets.all(10.0),
+                      child: InkWell(
+                        onTap: () => Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) =>
+                                  new PlayStatusVideo(videoList[index])),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              // Where the linear gradient begins and ends
+                              begin: Alignment.bottomLeft,
+                              end: Alignment.topRight,
+                              // Add one stop for each color. Stops should increase from 0 to 1
+                              stops: [0.1, 0.3, 0.5, 0.7, 0.9],
+                              colors: [
+                                // Colors are easy thanks to Flutter's Colors class.
+                                Color(0xffb7d8cf),
+                                Color(0xffb7d8cf),
+                                Color(0xffb7d8cf),
+                                Color(0xffb7d8cf),
+                                Color(0xffb7d8cf),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          ),
+                          child: FutureBuilder(
+                              future: _getImage(videoList[index]),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  if (snapshot.hasData) {
+                                    return Column(children: <Widget>[
+                                      Hero(
+                                        tag: videoList[index],
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              new MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      new PlayStatusVideo(
+                                                          videoList[index])),
+                                            );
+                                          },
+                                          child: Image.file(
+                                            File(snapshot.data.toString()),
+                                            height: 170,
+                                          ),
+                                        ),
+                                      ),
+                                    ]);
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                } else {
+                                  return Hero(
+                                    tag: videoList[index],
+                                    child: Container(
+                                      height: 170,
+                                      child: Image.asset(
+                                          "images/video_loader.gif"),
+                                    ),
+                                  );
+                                }
+                              }),
+                          //new cod
+                        ),
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    child: FutureBuilder(
-                        future: _getImage(videoList[index]),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            if (snapshot.hasData) {
-                              return Column(children: <Widget>[
-                                Hero(
-                                  tag: videoList[index],
-                                  child: Image.file(
-                                    File(snapshot.data.toString()),
-                                    height: 280.0,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10.0, right: 10.0),
-                                  child: ElevatedButton(
-                                    child: Text('Play Video'),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        new MaterialPageRoute(
-                                            builder: (context) =>
-                                                new PlayStatusVideo(
-                                                    videoList[index])),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        primary: Colors.deepOrange,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 50, vertical: 20),
-                                        textStyle: TextStyle(fontSize: 20)),
-                                  ),
-                                ),
-                              ]);
-                            } else {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                          } else {
-                            return Hero(
-                              tag: videoList[index],
-                              child: Container(
-                                height: 280.0,
-                                child: Image.asset(
-                                    "assets/images/video_loader.gif"),
-                              ),
-                            );
-                          }
-                        }),
-                    //new cod
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ),
           ),
         );
       } else {

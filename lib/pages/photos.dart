@@ -25,6 +25,15 @@ class PhotosState extends State<Photos> {
       return Scaffold(
         appBar: AppBar(
           title: Text("Whatsapp Photo Status"),
+          actions: <Widget>[], //<Widget>[]
+          backgroundColor: Colors.deepOrange,
+          elevation: 50.0,
+          leading: IconButton(
+            icon: Icon(Icons.shield),
+            tooltip: 'Menu Icon',
+            onPressed: () {},
+          ), //IconButton
+          brightness: Brightness.dark,
         ),
         body: Container(
           padding: EdgeInsets.only(bottom: 60.0),
@@ -47,38 +56,57 @@ class PhotosState extends State<Photos> {
         return Scaffold(
           appBar: AppBar(
             title: Text("Whatsapp Photo Status"),
+            actions: <Widget>[], //<Widget>[]
+            backgroundColor: Colors.deepOrange,
+            elevation: 50.0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              tooltip: 'Menu Icon',
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ), //IconButton
+            brightness: Brightness.dark,
           ),
           body: Container(
-            padding: EdgeInsets.only(bottom: 60.0),
-            child: StaggeredGridView.countBuilder(
-              padding: const EdgeInsets.all(8.0),
-              crossAxisCount: 4,
-              itemCount: imageList.length,
-              itemBuilder: (context, index) {
-                String imgPath = imageList[index];
-                return Material(
-                  elevation: 8.0,
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  child: InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new ViewPhotos(imgPath)),
-                    ),
-                    child: Hero(
-                      tag: imgPath,
-                      child: Image.file(
-                        File(imgPath),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+            color: Colors.deepOrange,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
+              child: Card(
+                elevation: 5,
+                child: ClipPath(
+                  child: StaggeredGridView.countBuilder(
+                    padding: const EdgeInsets.all(8.0),
+                    crossAxisCount: 4,
+                    itemCount: imageList.length,
+                    itemBuilder: (context, index) {
+                      String imgPath = imageList[index];
+                      return Material(
+                        elevation: 8.0,
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        child: InkWell(
+                          onTap: () => Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                                builder: (context) => new ViewPhotos(imgPath)),
+                          ),
+                          child: Hero(
+                            tag: imgPath,
+                            child: Image.file(
+                              File(imgPath),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    staggeredTileBuilder: (i) =>
+                        StaggeredTile.count(2, i.isEven ? 2 : 3),
+                    mainAxisSpacing: 8.0,
+                    crossAxisSpacing: 8.0,
                   ),
-                );
-              },
-              staggeredTileBuilder: (i) =>
-                  StaggeredTile.count(2, i.isEven ? 2 : 3),
-              mainAxisSpacing: 8.0,
-              crossAxisSpacing: 8.0,
+                ),
+              ),
             ),
           ),
         );

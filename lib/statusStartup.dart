@@ -19,7 +19,7 @@ class _statusStartupState extends State<statusStartup> {
   Future<int>? _readwritePermissionChecker;
 
   Future<bool> checkReadPermission() async {
-    var status = await Permission.manageExternalStorage.status;
+    var status = await Permission.storage.status;
 
     print("Checking Read Permission : " + status.toString());
     setState(() {
@@ -36,7 +36,7 @@ class _statusStartupState extends State<statusStartup> {
   }
 
   Future<bool> checkWritePermission() async {
-    var status = await Permission.manageExternalStorage.status;
+    var status = await Permission.storage.status;
 
     print("Checking Read Permission : " + status.toString());
     setState(() {
@@ -53,7 +53,7 @@ class _statusStartupState extends State<statusStartup> {
   }
 
   Future<int> requestReadPermission() async {
-    if (await Permission.contacts.request().isGranted) {
+    if (await Permission.storage.request().isGranted) {
       print("pass");
       return 1;
       // Either the permission was already granted before or the user just granted it.
@@ -65,7 +65,7 @@ class _statusStartupState extends State<statusStartup> {
 
   // Future<int> requestWritePermission() async {
   //   PermissionStatus result = await SimplePermissions.requestPermission(
-  //       Permission.WriteExternalmanageExternalStorage);
+  //       Permission.WriteExterna.storage);
   //   print("Requesting Write Permission $result");
   //   if (result.toString() == "PermissionStatus.denied") {
   //     return 1;
@@ -81,8 +81,6 @@ class _statusStartupState extends State<statusStartup> {
     super.initState();
 
     _readwritePermissionChecker = (() async {
-      int readPermissionCheckInt;
-      int writePermissionCheckInt;
       int finalPermission;
 
       print(
@@ -93,25 +91,7 @@ class _statusStartupState extends State<statusStartup> {
         _readPermissionCheck = true;
       }
       if (_readPermissionCheck!) {
-        readPermissionCheckInt = 1;
-      } else {
-        readPermissionCheckInt = 0;
-      }
-
-      if (_writePermissionCheck == null || _writePermissionCheck == false) {
-        _writePermissionCheck = await checkWritePermission();
-      }
-      if (_writePermissionCheck!) {
-        writePermissionCheckInt = 1;
-      } else {
-        writePermissionCheckInt = 0;
-      }
-      if (readPermissionCheckInt == 1) {
-        if (writePermissionCheckInt == 1) {
-          finalPermission = 2;
-        } else {
-          finalPermission = 1;
-        }
+        finalPermission = 1;
       } else {
         finalPermission = 0;
       }
@@ -122,7 +102,7 @@ class _statusStartupState extends State<statusStartup> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Status Downloader',
+      title: 'WhatsApp Status Downloader',
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
@@ -132,46 +112,12 @@ class _statusStartupState extends State<statusStartup> {
         builder: (context, status) {
           if (status.connectionState == ConnectionState.done) {
             if (status.hasData) {
-              if (status.data == 2) {
+              if (status.data == 1) {
                 return statusDashboard();
-              } else if (status.data == 1) {
-                return Scaffold(
-                  body: Container(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Text(
-                              "Write Permission Required",
-                              style: TextStyle(fontSize: 20.0),
-                            ),
-                          ),
-                          // FlatButton(
-                          //   padding: EdgeInsets.all(15.0),
-                          //   child: Text(
-                          //     "Allow Write Permission",
-                          //     style: TextStyle(fontSize: 20.0),
-                          //   ),
-                          //   color: Colors.indigo,
-                          //   textColor: Colors.white,
-                          //   onPressed: () {
-                          //     setState(() {
-                          //       _readwritePermissionChecker =
-                          //           requestWritePermission();
-                          //     });
-                          //   },
-                          // )
-                        ],
-                      ),
-                    ),
-                  ),
-                );
               } else {
                 return Scaffold(
                   body: Container(
+                    color: Colors.deepOrange,
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -181,23 +127,25 @@ class _statusStartupState extends State<statusStartup> {
                             padding: const EdgeInsets.all(20.0),
                             child: Text(
                               "File Read Permission Required",
-                              style: TextStyle(fontSize: 20.0),
+                              style: TextStyle(
+                                  fontSize: 20.0, color: Colors.white),
                             ),
                           ),
                           ElevatedButton(
-                            child: Text('Allow File Read Permission'),
-                            onPressed: () {
-                              setState(() {
-                                _readwritePermissionChecker =
-                                    requestReadPermission();
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.deepOrange,
+                              child: Text('Allow File Read Permission'),
+                              onPressed: () {
+                                setState(() {
+                                  _readwritePermissionChecker =
+                                      requestReadPermission();
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 50, vertical: 20),
-                                textStyle: TextStyle(fontSize: 20)),
-                          )
+                                    horizontal: 40, vertical: 20),
+                                textStyle: TextStyle(fontSize: 20),
+                              )),
                         ],
                       ),
                     ),
@@ -207,6 +155,7 @@ class _statusStartupState extends State<statusStartup> {
             } else {
               return Scaffold(
                 body: Container(
+                  color: Colors.deepOrange,
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -228,6 +177,7 @@ class _statusStartupState extends State<statusStartup> {
           } else {
             return Scaffold(
               body: Container(
+                color: Colors.deepOrange,
                 child: Center(
                   child: CircularProgressIndicator(),
                 ),
@@ -256,8 +206,16 @@ class _statusDashboardState extends State<statusDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Download WhatsApp Status"),
-        //elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
+        title: Text("WhatsApp Status Downloader"),
+        actions: <Widget>[], //<Widget>[]
+        backgroundColor: Colors.deepOrange,
+        elevation: 50.0,
+        leading: IconButton(
+          icon: Icon(Icons.shield),
+          tooltip: 'Menu Icon',
+          onPressed: () {},
+        ), //IconButton
+        brightness: Brightness.dark,
       ),
       body: DashboardScreen(),
       drawer: Drawer(

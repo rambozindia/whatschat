@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share/share.dart';
 import 'package:whatschat/pages/video_controller.dart';
 import 'package:video_player/video_player.dart';
 
@@ -107,47 +108,78 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Container(
-          padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
-          child: ElevatedButton.icon(
-            label: Text(
-              'Download',
-              style: TextStyle(fontSize: 16.0),
-            ), //`T
-            onPressed: () async {
-              _onLoading(true, "");
+            padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 5.0),
+            child: Row(
+              children: [
+                ElevatedButton.icon(
+                  label: Text(
+                    'Save',
+                    style: TextStyle(fontSize: 16.0),
+                  ), //`T
+                  onPressed: () async {
+                    _onLoading(true, "");
 
-              File originalVideoFile = File(widget.videoFile);
-              Directory? directory = await getExternalStorageDirectory();
-              if (!Directory("${directory!.path}/Downloaded Status/Videos")
-                  .existsSync()) {
-                Directory("${directory.path}/Downloaded Status/Videos")
-                    .createSync(recursive: true);
-              }
-              String path = directory.path;
-              String curDate = DateTime.now().toString();
-              String newFileName =
-                  "$path/Downloaded Status/Videos/VIDEO-$curDate.mp4";
-              print(newFileName);
-              await originalVideoFile.copy(newFileName);
+                    File originalVideoFile = File(widget.videoFile);
+                    Directory? directory = await getExternalStorageDirectory();
+                    if (!Directory(
+                            "${directory!.path}/Downloaded Status/Videos")
+                        .existsSync()) {
+                      Directory("${directory.path}/Downloaded Status/Videos")
+                          .createSync(recursive: true);
+                    }
+                    String path = directory.path;
+                    String curDate = DateTime.now().toString();
+                    String newFileName =
+                        "$path/Downloaded Status/Videos/VIDEO-$curDate.mp4";
+                    print(newFileName);
+                    await originalVideoFile.copy(newFileName);
 
-              _onLoading(false,
-                  "If Video not available in gallary\n\nYou can find all videos at");
-            },
-            icon: Icon(Icons.file_download),
-            style: ElevatedButton.styleFrom(
-                primary: Colors.deepOrange,
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                textStyle: TextStyle(fontSize: 20)),
-          ),
-        ),
+                    _onLoading(false,
+                        "If Video not available in gallary\n\nYou can find all videos at");
+                  },
+                  icon: Icon(Icons.file_download),
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.deepOrange,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                      textStyle: TextStyle(fontSize: 20)),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton.icon(
+                  label: Text(
+                    'Share',
+                    style: TextStyle(fontSize: 16.0),
+                  ), //`T
+                  onPressed: () async {
+                    await Share.shareFiles([widget.videoFile],
+                        text: "Share from Number to WhatsChat");
+                  },
+                  icon: Icon(Icons.share),
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.deepOrange,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                      textStyle: TextStyle(fontSize: 20)),
+                ),
+              ],
+            )),
       ),
       body: Container(
-        child: StatusVideo(
-          videoPlayerController:
-              VideoPlayerController.file(File(widget.videoFile)),
-          looping: true,
-          videoSrc: widget.videoFile,
-          aspectRatio: 6 / 9,
+        color: Colors.deepOrange,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
+          child: Card(
+            elevation: 5,
+            child: ClipPath(
+              child: StatusVideo(
+                videoPlayerController:
+                    VideoPlayerController.file(File(widget.videoFile)),
+                looping: true,
+                videoSrc: widget.videoFile,
+                aspectRatio: 6 / 9,
+              ),
+            ),
+          ),
         ),
       ),
     );

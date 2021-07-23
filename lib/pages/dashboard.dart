@@ -59,7 +59,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xffe8e8e8),
+      color: Colors.deepOrange,
       child: ListView(children: <Widget>[
         //Welcome and Balance Info
         Container(
@@ -81,12 +81,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Text("Photo Status",
                       style: TextStyle(
                         fontSize: 24.0,
-                        color: Colors.white,
+                        color: Colors.black,
                       )),
                   Text("Click here to view all photo status.",
                       style: TextStyle(
                         fontSize: 17.0,
-                        color: Colors.white70,
+                        color: Colors.black,
                       )),
                 ],
               ),
