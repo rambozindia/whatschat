@@ -45,7 +45,7 @@ class _MyNumberListState extends State<NumberList> {
         backgroundColor: Colors.deepOrange,
         elevation: 50.0,
         leading: IconButton(
-          icon: Icon(Icons.shield),
+          icon: Icon(Icons.list),
           tooltip: 'Menu Icon',
           onPressed: () {},
         ), //IconButton
@@ -114,23 +114,31 @@ class _MyNumberListState extends State<NumberList> {
                                                       alignment:
                                                           Alignment.centerRight,
                                                       child: IconButton(
-                                                        icon: Icon(Icons.call),
-                                                        tooltip: 'call',
+                                                        icon: Icon(Icons.send),
+                                                        tooltip: 'Whatsapp',
                                                         onPressed: () {
-                                                          launch('tel:+' +
+                                                          _sendMessage(
                                                               mobNumbers[index]
                                                                   ['mob']);
                                                         },
                                                       ),
                                                     ),
                                                     IconButton(
-                                                      icon: Icon(Icons.send),
-                                                      tooltip: 'Whatsapp',
+                                                      icon: Icon(Icons.call),
+                                                      tooltip: 'call',
                                                       onPressed: () {
-                                                        _sendMessage(
+                                                        launch('tel:+' +
                                                             mobNumbers[index]
                                                                 ['mob']);
-                                                        print("object========");
+                                                      },
+                                                    ),
+                                                    IconButton(
+                                                      icon: Icon(Icons.sms),
+                                                      tooltip: 'Message',
+                                                      onPressed: () {
+                                                        launch('sms:+' +
+                                                            mobNumbers[index]
+                                                                ['mob']);
                                                       },
                                                     ),
                                                   ],

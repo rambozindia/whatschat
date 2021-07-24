@@ -41,7 +41,6 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
             );
           });
     } else {
-      Navigator.pop(context);
       showDialog(
           context: context,
           barrierDismissible: false,
@@ -117,7 +116,7 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
                     style: TextStyle(fontSize: 16.0),
                   ), //`T
                   onPressed: () async {
-                    _onLoading(true, "");
+                    //_onLoading(true, "");
 
                     File originalVideoFile = File(widget.videoFile);
                     Directory? directory = await getExternalStorageDirectory();

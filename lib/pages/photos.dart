@@ -23,24 +23,20 @@ class PhotosState extends State<Photos> {
   Widget build(BuildContext context) {
     if (!Directory("${_photoDir.path}").existsSync()) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text("Whatsapp Photo Status"),
-          actions: <Widget>[], //<Widget>[]
-          backgroundColor: Colors.deepOrange,
-          elevation: 50.0,
-          leading: IconButton(
-            icon: Icon(Icons.shield),
-            tooltip: 'Menu Icon',
-            onPressed: () {},
-          ), //IconButton
-          brightness: Brightness.dark,
-        ),
         body: Container(
-          padding: EdgeInsets.only(bottom: 60.0),
-          child: Center(
-            child: Text(
-              "Install WhatsApp\nYour Friend's Status will be available here.",
-              style: TextStyle(fontSize: 18.0),
+          color: Colors.deepOrange,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
+            child: Card(
+              elevation: 5,
+              child: ClipPath(
+                child: Center(
+                  child: Text(
+                    "Install WhatsApp\nYour Friend's Status will be available here.",
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -54,20 +50,6 @@ class PhotosState extends State<Photos> {
 
       if (imageList.length > 0) {
         return Scaffold(
-          appBar: AppBar(
-            title: Text("Whatsapp Photo Status"),
-            actions: <Widget>[], //<Widget>[]
-            backgroundColor: Colors.deepOrange,
-            elevation: 50.0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              tooltip: 'Menu Icon',
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ), //IconButton
-            brightness: Brightness.dark,
-          ),
           body: Container(
             color: Colors.deepOrange,
             child: Padding(

@@ -41,7 +41,6 @@ class _ViewPhotosState extends State<ViewPhotos> {
             );
           });
     } else {
-      Navigator.pop(context);
       showDialog(
           context: context,
           barrierDismissible: false,
@@ -113,7 +112,7 @@ class _ViewPhotosState extends State<ViewPhotos> {
               ElevatedButton.icon(
                 label: Text('Download', style: TextStyle(fontSize: 16.0)),
                 onPressed: () async {
-                  _onLoading(true, "");
+                  // _onLoading(true, "");
 //                File originalImageFile1 = File(widget.imgPath);
 //
 //                Directory directory = await getExternalStorageDirectory();

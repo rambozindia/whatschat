@@ -22,9 +22,8 @@ class _numberToChatState extends State<numberToChat> {
   final contactNumber = TextEditingController();
   final message = TextEditingController();
   final LocalStorage storage = new LocalStorage('todo_app.json');
-
-  bool _isInterstitialAdLoaded = false;
   int countrycd = 91;
+
   static final AdRequest request = AdRequest(
     keywords: <String>['foo', 'bar'],
     contentUrl: 'http://foo.com/bar.html',
@@ -37,27 +36,16 @@ class _numberToChatState extends State<numberToChat> {
   BannerAd? _anchoredBanner;
   bool _loadingAnchoredBanner = false;
 
-  Widget _currentAd = SizedBox(
-    width: 0.0,
-    height: 0.0,
-  );
-  Widget _currentAd2 = SizedBox(
-    width: 0.0,
-    height: 0.0,
-  );
-
   @override
   void initState() {
     super.initState();
 
     _createInterstitialAd();
-
-    // _loadInterstitialAd();
   }
 
   void _createInterstitialAd() {
     InterstitialAd.load(
-        adUnitId: InterstitialAd.testAdUnitId,
+        adUnitId: getInterstitialAdUnitId(),
         request: request,
         adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (InterstitialAd ad) {
@@ -93,7 +81,7 @@ class _numberToChatState extends State<numberToChat> {
       },
       onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
         print('$ad onAdFailedToShowFullScreenContent: $error');
-        // _sendMessage();
+        _sendMessage();
         ad.dispose();
         _createInterstitialAd();
       },
@@ -227,7 +215,7 @@ class _numberToChatState extends State<numberToChat> {
                             hintText: 'Type number without country code',
                           ),
                           validator: (value) {
-                            if (value != "" || value!.length < 8) {
+                            if (value!.isEmpty || value.length < 8) {
                               return 'Please enter a valid number';
                             }
                             return null;
@@ -246,7 +234,9 @@ class _numberToChatState extends State<numberToChat> {
                   ElevatedButton(
                     child: Text('Message on WhatsApp'),
                     onPressed: () {
-                      _showInterstitialAd();
+                      if (_formKey.currentState!.validate()) {
+                        _showInterstitialAd();
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                         primary: Colors.deepOrange,
@@ -260,23 +250,28 @@ class _numberToChatState extends State<numberToChat> {
                         padding: EdgeInsets.all(20),
                         child: Text("Made with ❤️ in India")),
                   ),
-                  // Align(
-                  //   alignment: Alignment(0, 1.0),
-                  //   child: SafeArea(
-                  //     child: Stack(
-                  //       alignment: AlignmentDirectional.bottomCenter,
-                  //       children: <Widget>[
-                  //         if (_anchoredBanner != null)
-                  //           Container(
-                  //             color: Colors.green,
-                  //             width: _anchoredBanner!.size.width.toDouble(),
-                  //             height: _anchoredBanner!.size.height.toDouble(),
-                  //             child: AdWidget(ad: _anchoredBanner!),
-                  //           ),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
+                  Container(
+                    height: 100,
+                    child: ClipPath(
+                      child: Align(
+                        alignment: Alignment(0, 1.0),
+                        child: SafeArea(
+                          child: Stack(
+                            alignment: AlignmentDirectional.bottomCenter,
+                            children: <Widget>[
+                              if (_anchoredBanner != null)
+                                Container(
+                                  width: _anchoredBanner!.size.width.toDouble(),
+                                  height:
+                                      _anchoredBanner!.size.height.toDouble(),
+                                  child: AdWidget(ad: _anchoredBanner!),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ]),
               ),
             ),
@@ -288,15 +283,6 @@ class _numberToChatState extends State<numberToChat> {
       ),
     );
   }
-}
-
-String getAppId() {
-  if (Platform.isIOS) {
-    return 'ca-app-pub-5924361002999470~6378678384';
-  } else if (Platform.isAndroid) {
-    return 'ca-app-pub-5924361002999470~6378678384';
-  }
-  return "";
 }
 
 String getBannerAdUnitId() {

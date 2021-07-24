@@ -23,44 +23,26 @@ class VideoListViewState extends State<VideoListView> {
   Widget build(BuildContext context) {
     if (!Directory("${_videoDir.path}").existsSync()) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text("Whatsapp Video Status"),
-          actions: <Widget>[], //<Widget>[]
-          backgroundColor: Colors.deepOrange,
-          elevation: 50.0,
-          leading: IconButton(
-            icon: Icon(Icons.shield),
-            tooltip: 'Menu Icon',
-            onPressed: () {},
-          ), //IconButton
-          brightness: Brightness.dark,
-        ),
         body: Container(
-          padding: EdgeInsets.only(bottom: 60.0),
-          child: Center(
-            child: Text(
-              "Install WhatsApp\nYour Friend's Status will be available here.",
-              style: TextStyle(fontSize: 18.0),
+          color: Colors.deepOrange,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
+            child: Card(
+              elevation: 5,
+              child: ClipPath(
+                child: Center(
+                  child: Text(
+                    "Install WhatsApp\nYour Friend's Status will be available here.",
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
       );
     } else {
       return Scaffold(
-        appBar: AppBar(
-          title: Text("Whatsapp Video Status"),
-          actions: <Widget>[], //<Widget>[]
-          backgroundColor: Colors.deepOrange,
-          elevation: 50.0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            tooltip: 'Menu Icon',
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ), //IconButton
-          brightness: Brightness.dark,
-        ),
         body: VideoGrid(directory: _videoDir),
       );
     }

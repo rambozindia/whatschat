@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'numbertochat.dart';
 import 'numberList.dart';
 import 'statusStartup.dart';
+import 'aboutPage.dart';
 
 void main() {
   runApp(MyApp());
@@ -94,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
             numberToChat(),
             statusStartup(),
             NumberList(),
-            SampleScreen,
+            aboutPage(),
           ],
         ));
   }

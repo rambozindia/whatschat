@@ -63,19 +63,6 @@ class _statusStartupState extends State<statusStartup> {
     }
   }
 
-  // Future<int> requestWritePermission() async {
-  //   PermissionStatus result = await SimplePermissions.requestPermission(
-  //       Permission.WriteExterna.storage);
-  //   print("Requesting Write Permission $result");
-  //   if (result.toString() == "PermissionStatus.denied") {
-  //     return 1;
-  //   } else if (result.toString() == "PermissionStatus.authorized") {
-  //     return 2;
-  //   } else {
-  //     return 1;
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -205,18 +192,6 @@ class _statusDashboardState extends State<statusDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("WhatsApp Status Downloader"),
-        actions: <Widget>[], //<Widget>[]
-        backgroundColor: Colors.deepOrange,
-        elevation: 50.0,
-        leading: IconButton(
-          icon: Icon(Icons.shield),
-          tooltip: 'Menu Icon',
-          onPressed: () {},
-        ), //IconButton
-        brightness: Brightness.dark,
-      ),
       body: DashboardScreen(),
       drawer: Drawer(
         child: MyNavigationDrawer(),
