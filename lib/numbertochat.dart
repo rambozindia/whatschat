@@ -6,6 +6,7 @@ import 'package:open_whatsapp/open_whatsapp.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class numberToChat extends StatefulWidget {
   numberToChat({Key? key}) : super(key: key);
@@ -141,15 +142,55 @@ class _numberToChatState extends State<numberToChat> {
     });
   }
 
-  _sendMessage() {
+  _sendMessage() async {
     _addItem(countrycd.toString() + contactNumber.text);
-    FlutterOpenWhatsapp.sendSingleMessage(
-        countrycd.toString() + contactNumber.text, message.text);
+    // FlutterOpenWhatsapp.sendSingleMessage(
+    //     countrycd.toString() + contactNumber.text, message.text);
+
+    if (await canLaunch(
+        url(countrycd.toString() + contactNumber.text, message.text))) {
+      await launch(
+          url(countrycd.toString() + contactNumber.text, message.text));
+      // await launch(
+      //     url2(countrycd.toString() + contactNumber.text, message.text));
+    }
 
     print(countrycd.toString() +
         contactNumber.text +
         message.text +
         "========-----");
+  }
+
+  covid_certificate() async {
+    if (await canLaunch(url("919013151515", "covid certificate"))) {
+      await launch(url("919013151515", "covid certificate"));
+      // await launch(
+      //     url2(countrycd.toString() + contactNumber.text, message.text));
+    }
+  }
+
+  // String url2(phone, message) {
+  //   if (Platform.isIOS) {
+  //     return "whatsapp://wa.me/" + phone + "/?text=${Uri.encodeFull(message)}";
+  //   } else {
+  //     return "whatsapp://send?phone=" +
+  //         phone +
+  //         "&text=${Uri.encodeFull(message)}";
+  //   }
+  // }
+
+  String url(phone, message) {
+    if (Platform.isAndroid) {
+      // add the [https]
+      return "https://wa.me/" +
+          phone +
+          "/?text=${Uri.parse(message)}"; // new line
+    } else {
+      // add the [https]
+      return "https://api.whatsapp.com/send?phone=" +
+          phone +
+          "&text=${Uri.parse(message)}"; // new line
+    }
   }
 
   @override
@@ -183,105 +224,134 @@ class _numberToChatState extends State<numberToChat> {
       _createAnchoredBanner(context);
     }
     return Container(
-      color: Colors.deepOrange,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
-        child: Card(
-          elevation: 5,
-          child: ClipPath(
-            child: Form(
-              key: _formKey,
-              child: Center(
-                child: ListView(padding: EdgeInsets.all(10), children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      CountryCodePicker(
-                        onChanged: _onCountryChange,
-                        // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
-                        initialSelection: 'IN',
-                        favorite: ['+91', 'IN'],
-                        // optional. Shows only country name and flag
-                        showCountryOnly: false,
-                        // optional. Shows only country name and flag when popup is closed.
-                        showOnlyCountryWhenClosed: false,
-                        // optional. aligns the flag and the Text left
-                        alignLeft: false,
-                      ),
-                      Expanded(
-                        child: TextFormField(
-                          controller: contactNumber,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            hintText: 'Type number without country code',
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty || value.length < 8) {
-                              return 'Please enter a valid number';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  TextFormField(
-                    controller: message,
-                    maxLines: 6,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter the message (optional)',
-                    ),
-                  ),
-                  ElevatedButton(
-                    child: Text('Message on WhatsApp'),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _showInterstitialAd();
-                      }
+        color: Colors.deepOrange,
+        child: ListView(
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
+              child: Card(
+                elevation: 5,
+                child: InkWell(
+                    onTap: () {
+                      covid_certificate();
                     },
-                    style: ElevatedButton.styleFrom(
-                        primary: Colors.deepOrange,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                        textStyle: TextStyle(fontSize: 20)),
-                  ),
-                  Align(
-                    alignment: Alignment(0, 1.0),
-                    child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Text("Made with ❤️ in India")),
-                  ),
-                  Container(
-                    height: 100,
-                    child: ClipPath(
-                      child: Align(
-                        alignment: Alignment(0, 1.0),
-                        child: SafeArea(
-                          child: Stack(
-                            alignment: AlignmentDirectional.bottomCenter,
-                            children: <Widget>[
-                              if (_anchoredBanner != null)
-                                Container(
-                                  width: _anchoredBanner!.size.width.toDouble(),
-                                  height:
-                                      _anchoredBanner!.size.height.toDouble(),
-                                  child: AdWidget(ad: _anchoredBanner!),
+                    child: Image(
+                      image: AssetImage('images/banner.jpg'),
+                    )),
+              ),
+            ),
+            Padding(
+                padding: EdgeInsets.fromLTRB(10, 10, 10, 30),
+                child: Card(
+                  elevation: 5,
+                  child: ClipPath(
+                    child: Form(
+                      key: _formKey,
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: <Widget>[
+                                  CountryCodePicker(
+                                    onChanged: _onCountryChange,
+                                    // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
+                                    initialSelection: 'IN',
+                                    favorite: ['+91', 'IN'],
+                                    // optional. Shows only country name and flag
+                                    showCountryOnly: false,
+                                    // optional. Shows only country name and flag when popup is closed.
+                                    showOnlyCountryWhenClosed: false,
+                                    // optional. aligns the flag and the Text left
+                                    alignLeft: false,
+                                  ),
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: contactNumber,
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(
+                                        hintText:
+                                            'Type number without country code',
+                                      ),
+                                      validator: (value) {
+                                        if (value!.isEmpty ||
+                                            value.length < 8) {
+                                          return 'Please enter a valid number';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              TextFormField(
+                                controller: message,
+                                maxLines: 6,
+                                decoration: const InputDecoration(
+                                  hintText: 'Enter the message (optional)',
                                 ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(10),
+                                child: ElevatedButton(
+                                  child: Text('Message on WhatsApp'),
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      _showInterstitialAd();
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.deepOrange,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 50, vertical: 20),
+                                      textStyle: TextStyle(fontSize: 20)),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment(0, 1.0),
+                                child: Padding(
+                                    padding: EdgeInsets.all(20),
+                                    child: Text("Made with ❤️ in India")),
+                              ),
+                              Container(
+                                height: 100,
+                                child: ClipPath(
+                                  child: Align(
+                                    alignment: Alignment(0, 1.0),
+                                    child: SafeArea(
+                                      child: Stack(
+                                        alignment:
+                                            AlignmentDirectional.bottomCenter,
+                                        children: <Widget>[
+                                          if (_anchoredBanner != null)
+                                            Container(
+                                              width: _anchoredBanner!.size.width
+                                                  .toDouble(),
+                                              height: _anchoredBanner!
+                                                  .size.height
+                                                  .toDouble(),
+                                              child: AdWidget(
+                                                  ad: _anchoredBanner!),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       ),
                     ),
+                    clipper: ShapeBorderClipper(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(3))),
                   ),
-                ]),
-              ),
-            ),
-            clipper: ShapeBorderClipper(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(3))),
-          ),
-        ),
-      ),
-    );
+                )),
+          ],
+        ));
   }
 }
 

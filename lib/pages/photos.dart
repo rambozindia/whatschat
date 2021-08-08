@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:whatschat/pages/view_photo.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-final Directory _photoDir =
+Directory _photoDir =
     new Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
+
+Directory _photoDir2 = new Directory(
+    '/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
 
 class Photos extends StatefulWidget {
   @override
@@ -21,7 +24,8 @@ class PhotosState extends State<Photos> {
 
   @override
   Widget build(BuildContext context) {
-    if (!Directory("${_photoDir.path}").existsSync()) {
+    if (!Directory("${_photoDir.path}").existsSync() &&
+        !Directory("${_photoDir2.path}").existsSync()) {
       return Scaffold(
         body: Container(
           color: Colors.deepOrange,
@@ -42,6 +46,11 @@ class PhotosState extends State<Photos> {
         ),
       );
     } else {
+      if (Directory("${_photoDir.path}").existsSync()) {
+        _photoDir = _photoDir;
+      } else if (Directory("${_photoDir2.path}").existsSync()) {
+        _photoDir = _photoDir2;
+      }
       var imageList = _photoDir
           .listSync()
           .map((item) => item.path)

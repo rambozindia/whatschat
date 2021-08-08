@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,29 @@ class _MyNumberListState extends State<NumberList> {
 
   _sendMessage(contactNumber) {
     if (initialized) FlutterOpenWhatsapp.sendSingleMessage(contactNumber, "");
+  }
+
+  // String url2(phone, message) {
+  //   if (Platform.isIOS) {
+  //     return "whatsapp://wa.me/" + phone + "/?text=${Uri.encodeFull(message)}";
+  //   } else {
+  //     return "whatsapp://send?phone=" +
+  //         phone +
+  //         "&text=${Uri.encodeFull(message)}";
+  //   }
+  // }
+  String url(phone, message) {
+    if (Platform.isAndroid) {
+      // add the [https]
+      return "https://wa.me/" +
+          phone +
+          "/?text=${Uri.parse(message)}"; // new line
+    } else {
+      // add the [https]
+      return "https://api.whatsapp.com/send?phone=" +
+          phone +
+          "&text=${Uri.parse(message)}"; // new line
+    }
   }
 
   Widget build(BuildContext context) {
@@ -117,9 +141,13 @@ class _MyNumberListState extends State<NumberList> {
                                                         icon: Icon(Icons.send),
                                                         tooltip: 'Whatsapp',
                                                         onPressed: () {
-                                                          _sendMessage(
+                                                          // _sendMessage(
+                                                          //     mobNumbers[index]
+                                                          //         ['mob']);
+                                                          launch(url(
                                                               mobNumbers[index]
-                                                                  ['mob']);
+                                                                  ['mob'],
+                                                              ""));
                                                         },
                                                       ),
                                                     ),

@@ -6,6 +6,9 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 final Directory _videoDir =
     new Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
 
+final Directory _videoDir2 = new Directory(
+    '/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+
 class VideoListView extends StatefulWidget {
   @override
   VideoListViewState createState() {
@@ -21,7 +24,8 @@ class VideoListViewState extends State<VideoListView> {
 
   @override
   Widget build(BuildContext context) {
-    if (!Directory("${_videoDir.path}").existsSync()) {
+    if (!Directory("${_videoDir.path}").existsSync() &&
+        !Directory("${_videoDir2.path}").existsSync()) {
       return Scaffold(
         body: Container(
           color: Colors.deepOrange,
@@ -42,9 +46,15 @@ class VideoListViewState extends State<VideoListView> {
         ),
       );
     } else {
-      return Scaffold(
-        body: VideoGrid(directory: _videoDir),
-      );
+      if (Directory("${_videoDir2.path}").existsSync()) {
+        return Scaffold(
+          body: VideoGrid(directory: _videoDir2),
+        );
+      } else {
+        return Scaffold(
+          body: VideoGrid(directory: _videoDir),
+        );
+      }
     }
   }
 }
