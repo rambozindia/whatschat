@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:whatschat/pages/view_photo.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-Directory _photoDir =
+final Directory _photoDir =
     new Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
 
-Directory _photoDir2 = new Directory(
+final Directory _photoDir2 = new Directory(
     '/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
 
 class Photos extends StatefulWidget {
@@ -46,16 +46,27 @@ class PhotosState extends State<Photos> {
         ),
       );
     } else {
+      var imageList = [];
       if (Directory("${_photoDir.path}").existsSync()) {
-        _photoDir = _photoDir;
+        imageList = _photoDir
+            .listSync()
+            .map((item) => item.path)
+            .where((item) => item.endsWith(".jpg"))
+            .toList(growable: false);
+        if (Directory("${_photoDir2.path}").existsSync()) {
+          imageList = _photoDir2
+              .listSync()
+              .map((item) => item.path)
+              .where((item) => item.endsWith(".jpg"))
+              .toList(growable: false);
+        }
       } else if (Directory("${_photoDir2.path}").existsSync()) {
-        _photoDir = _photoDir2;
+        imageList = _photoDir2
+            .listSync()
+            .map((item) => item.path)
+            .where((item) => item.endsWith(".jpg"))
+            .toList(growable: false);
       }
-      var imageList = _photoDir
-          .listSync()
-          .map((item) => item.path)
-          .where((item) => item.endsWith(".jpg"))
-          .toList(growable: false);
 
       if (imageList.length > 0) {
         return Scaffold(
@@ -103,15 +114,20 @@ class PhotosState extends State<Photos> {
         );
       } else {
         return Scaffold(
-          appBar: AppBar(
-            title: Text("Whatsapp Photo Status"),
-          ),
-          body: Center(
-            child: Container(
-              padding: EdgeInsets.only(bottom: 60.0),
-              child: Text(
-                "Sorry, No Images Found.",
-                style: TextStyle(fontSize: 18.0),
+          body: Container(
+            color: Colors.deepOrange,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
+              child: Card(
+                elevation: 5,
+                child: ClipPath(
+                  child: Center(
+                    child: Text(
+                      "Sorry, No Images Found.",
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

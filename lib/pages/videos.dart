@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:whatschat/pages/video_play.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -71,8 +72,9 @@ class VideoGrid extends StatefulWidget {
 class _VideoGridState extends State<VideoGrid> {
   _getImage(videoPathUrl) async {
     //await Future.delayed(Duration(milliseconds: 500));
-    String? uint8list = await VideoThumbnail.thumbnailFile(
+    var uint8list = await VideoThumbnail.thumbnailFile(
       video: videoPathUrl,
+      thumbnailPath: getApplicationDocumentsDirectory().toString(),
       imageFormat: ImageFormat.PNG,
       quality: 10,
     );
@@ -187,12 +189,22 @@ class _VideoGridState extends State<VideoGrid> {
           ),
         );
       } else {
-        return Center(
-          child: Container(
-            padding: EdgeInsets.only(bottom: 60.0),
-            child: Text(
-              "Sorry, No Videos Found.",
-              style: TextStyle(fontSize: 18.0),
+        return Scaffold(
+          body: Container(
+            color: Colors.deepOrange,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
+              child: Card(
+                elevation: 5,
+                child: ClipPath(
+                  child: Center(
+                    child: Text(
+                      "Sorry, No Videos Found.",
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         );

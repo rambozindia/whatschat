@@ -201,7 +201,7 @@ class _MyNumberListState extends State<NumberList> {
                                   style: ElevatedButton.styleFrom(
                                       primary: Colors.deepOrange,
                                       padding: EdgeInsets.symmetric(
-                                          horizontal: 30, vertical: 10),
+                                          horizontal: 25, vertical: 10),
                                       textStyle: TextStyle(fontSize: 20)),
                                 ),
                               ),
@@ -218,7 +218,7 @@ class _MyNumberListState extends State<NumberList> {
                                   style: ElevatedButton.styleFrom(
                                       primary: Colors.deepOrange,
                                       padding: EdgeInsets.symmetric(
-                                          horizontal: 30, vertical: 10),
+                                          horizontal: 25, vertical: 10),
                                       textStyle: TextStyle(fontSize: 20)),
                                 ),
                               ),

@@ -143,7 +143,9 @@ class _numberToChatState extends State<numberToChat> {
   }
 
   _sendMessage() async {
-    _addItem(countrycd.toString() + contactNumber.text);
+    setState(() {
+      _addItem(countrycd.toString() + contactNumber.text);
+    });
     // FlutterOpenWhatsapp.sendSingleMessage(
     //     countrycd.toString() + contactNumber.text, message.text);
 
@@ -228,16 +230,21 @@ class _numberToChatState extends State<numberToChat> {
         child: ListView(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
+              padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: Card(
                 elevation: 5,
-                child: InkWell(
-                    onTap: () {
-                      covid_certificate();
-                    },
-                    child: Image(
-                      image: AssetImage('images/banner.jpg'),
-                    )),
+                child: ClipPath(
+                  clipper: ShapeBorderClipper(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3))),
+                  child: InkWell(
+                      onTap: () {
+                        covid_certificate();
+                      },
+                      child: Image(
+                        image: AssetImage('images/banner.jpg'),
+                      )),
+                ),
               ),
             ),
             Padding(
@@ -287,13 +294,13 @@ class _numberToChatState extends State<numberToChat> {
                               ),
                               TextFormField(
                                 controller: message,
-                                maxLines: 6,
+                                maxLines: 5,
                                 decoration: const InputDecoration(
                                   hintText: 'Enter the message (optional)',
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.all(10),
+                                padding: EdgeInsets.only(top: 10),
                                 child: ElevatedButton(
                                   child: Text('Message on WhatsApp'),
                                   onPressed: () {
@@ -303,9 +310,8 @@ class _numberToChatState extends State<numberToChat> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                       primary: Colors.deepOrange,
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 50, vertical: 20),
-                                      textStyle: TextStyle(fontSize: 20)),
+                                      textStyle: TextStyle(fontSize: 20),
+                                      minimumSize: Size(double.infinity, 50)),
                                 ),
                               ),
                               Align(
