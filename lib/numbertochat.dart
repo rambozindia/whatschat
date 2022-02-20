@@ -66,6 +66,7 @@ class _numberToChatState extends State<numberToChat> {
   }
 
   void _showInterstitialAd() {
+    FocusManager.instance.primaryFocus?.unfocus();
     if (_interstitialAd == null) {
       _sendMessage();
       print('Warning: attempt to show interstitial before loaded.');
@@ -375,7 +376,7 @@ String getNativedUnitId() {
   if (Platform.isIOS) {
     return 'ca-app-pub-5924361002999470/4345357040';
   } else if (Platform.isAndroid) {
-    return 'ca-app-pub-5924361002999470/2628163306';
+    return 'ca-app-pub-5924361002999470/4345357040';
   }
   return "";
 }
