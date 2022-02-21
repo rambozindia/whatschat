@@ -36,11 +36,11 @@ class _statusStartupState extends State<statusStartup> {
   }
 
   Future<bool> checkWritePermission() async {
-    var status = await Permission.storage.status;
+    var status = await Permission.manageExternalStorage.status;
 
     print("Checking Read Permission : " + status.toString());
     setState(() {
-      _readPermissionCheck = true;
+      _writePermissionCheck = true;
     });
     switch (status) {
       case PermissionStatus.denied:
@@ -53,14 +53,17 @@ class _statusStartupState extends State<statusStartup> {
   }
 
   Future<int> requestReadPermission() async {
+    int output = 0;
     if (await Permission.storage.request().isGranted) {
       print("pass");
-      return 1;
       // Either the permission was already granted before or the user just granted it.
-    } else {
-      print("fail");
-      return 0;
+      if (await Permission.manageExternalStorage.request().isGranted) {
+        print("pass 2");
+        output = 1;
+      }
     }
+
+    return output;
   }
 
   @override
@@ -77,7 +80,12 @@ class _statusStartupState extends State<statusStartup> {
       } else {
         _readPermissionCheck = true;
       }
-      if (_readPermissionCheck!) {
+      if (_writePermissionCheck == null || _writePermissionCheck == false) {
+        _writePermissionCheck = await checkWritePermission();
+      } else {
+        _writePermissionCheck = true;
+      }
+      if (_readPermissionCheck! && _writePermissionCheck!) {
         finalPermission = 1;
       } else {
         finalPermission = 0;

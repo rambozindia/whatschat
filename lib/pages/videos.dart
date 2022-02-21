@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:whatschat/pages/video_play.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
