@@ -50,12 +50,10 @@ class _numberToChatState extends State<numberToChat> {
         request: request,
         adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (InterstitialAd ad) {
-            print('$ad loaded');
             _interstitialAd = ad;
             _numInterstitialLoadAttempts = 0;
           },
           onAdFailedToLoad: (LoadAdError error) {
-            print('InterstitialAd failed to load: $error.');
             _numInterstitialLoadAttempts += 1;
             _interstitialAd = null;
             if (_numInterstitialLoadAttempts <= maxFailedLoadAttempts) {
@@ -69,20 +67,17 @@ class _numberToChatState extends State<numberToChat> {
     FocusManager.instance.primaryFocus?.unfocus();
     if (_interstitialAd == null) {
       _sendMessage();
-      print('Warning: attempt to show interstitial before loaded.');
       return;
     }
     _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) =>
-          print('ad onAdShowedFullScreenContent.'),
+      // onAdShowedFullScreenContent: (InterstitialAd ad) =>
+      //     print('ad onAdShowedFullScreenContent.'),
       onAdDismissedFullScreenContent: (InterstitialAd ad) {
         _sendMessage();
-        print('$ad onAdDismissedFullScreenContent.');
         ad.dispose();
         _createInterstitialAd();
       },
       onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
         _sendMessage();
         ad.dispose();
         _createInterstitialAd();
@@ -100,7 +95,6 @@ class _numberToChatState extends State<numberToChat> {
     );
 
     if (size == null) {
-      print('Unable to get height of anchored banner.');
       return;
     }
 
@@ -110,17 +104,15 @@ class _numberToChatState extends State<numberToChat> {
       adUnitId: getBannerAdUnitId(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-          print('$BannerAd loaded.');
           setState(() {
             _anchoredBanner = ad as BannerAd?;
           });
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          print('$BannerAd failedToLoad: $error');
           ad.dispose();
         },
-        onAdOpened: (Ad ad) => print('$BannerAd onAdOpened.'),
-        onAdClosed: (Ad ad) => print('$BannerAd onAdClosed.'),
+        // onAdOpened: (Ad ad) => print('$BannerAd onAdOpened.'),
+        // onAdClosed: (Ad ad) => print('$BannerAd onAdClosed.'),
       ),
     );
     return banner.load();
@@ -128,7 +120,6 @@ class _numberToChatState extends State<numberToChat> {
 
   void _onCountryChange(CountryCode countryCode) {
     countrycd = int.parse(countryCode.toString());
-    print(countrycd);
   }
 
   _addItem(String mobileNumber) {
@@ -138,8 +129,6 @@ class _numberToChatState extends State<numberToChat> {
       var newData = {'mob': mobileNumber};
       parsedJson.add(newData);
       storage.setItem('numbers', json.encode(parsedJson).toString());
-      print("================================");
-      print(storage.getItem('numbers'));
     });
   }
 
@@ -157,11 +146,6 @@ class _numberToChatState extends State<numberToChat> {
       // await launch(
       //     url2(countrycd.toString() + contactNumber.text, message.text));
     }
-
-    print(countrycd.toString() +
-        contactNumber.text +
-        message.text +
-        "========-----");
   }
 
   covid_certificate() async {

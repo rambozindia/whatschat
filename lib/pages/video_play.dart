@@ -17,7 +17,6 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
   @override
   void initState() {
     super.initState();
-    print("here is what you looking for:" + widget.videoFile);
   }
 
   void dispose() {
@@ -130,7 +129,6 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
                     String curDate = DateTime.now().toString();
                     String newFileName =
                         "$path/Downloaded Status/Videos/VIDEO-$curDate.mp4";
-                    print(newFileName);
                     await originalVideoFile.copy(newFileName);
 
                     _onLoading(false,

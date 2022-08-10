@@ -130,14 +130,9 @@ class _ViewPhotosState extends State<ViewPhotos> {
                   Uint8List? bytes;
                   await originalImageFile.readAsBytes().then((value) {
                     bytes = Uint8List.fromList(value);
-                    print('reading of bytes is completed');
-                  }).catchError((onError) {
-                    print('Exception Error while reading audio from path:' +
-                        onError.toString());
-                  });
+                  }).catchError((onError) {});
                   final result = await ImageGallerySaver.saveImage(
                       Uint8List.fromList(bytes!));
-                  print(result);
                   _onLoading(false,
                       "If Image not available in gallary\n\nYou can find all images at");
                 },

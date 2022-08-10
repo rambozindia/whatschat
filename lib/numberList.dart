@@ -109,7 +109,6 @@ class _MyNumberListState extends State<NumberList> {
                                 var jsonData =
                                     storage.getItem('numbers').toString();
                                 var parsedJson = json.decode(jsonData) ?? [];
-                                print(parsedJson);
                                 mobNumbers.addAll(parsedJson);
                                 initialized = true;
                               }
@@ -180,7 +179,6 @@ class _MyNumberListState extends State<NumberList> {
                                           )),
                                       onTap: () {
                                         _sendMessage(mobNumbers[index]['mob']);
-                                        print("object========");
                                       });
                                 },
                                 separatorBuilder:

@@ -109,7 +109,6 @@ checkpermission() async {
   Map<Permission, PermissionStatus> statuses = await [
     Permission.storage,
   ].request();
-  print(statuses[Permission.storage]);
 }
 
 Container SampleScreen = Container(

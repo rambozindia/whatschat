@@ -39,7 +39,6 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
 
     if (size == null) {
-      print('Unable to get height of anchored banner.');
       return;
     }
 
@@ -49,17 +48,15 @@ class _DashboardScreenState extends State<DashboardScreen>
       adUnitId: getBannerAdUnitId(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-          print('$BannerAd loaded.');
           setState(() {
             _anchoredBanner = ad as BannerAd?;
           });
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          print('$BannerAd failedToLoad: $error');
           ad.dispose();
         },
-        onAdOpened: (Ad ad) => print('$BannerAd onAdOpened.'),
-        onAdClosed: (Ad ad) => print('$BannerAd onAdClosed.'),
+        // onAdOpened: (Ad ad) => print('$BannerAd onAdOpened.'),
+        // onAdClosed: (Ad ad) => print('$BannerAd onAdClosed.'),
       ),
     );
     return banner.load();

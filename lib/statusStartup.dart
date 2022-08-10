@@ -20,8 +20,6 @@ class _statusStartupState extends State<statusStartup> {
 
   Future<bool> checkReadPermission() async {
     var status = await Permission.storage.status;
-
-    print("Checking Read Permission : " + status.toString());
     setState(() {
       _readPermissionCheck = true;
     });
@@ -37,8 +35,6 @@ class _statusStartupState extends State<statusStartup> {
 
   Future<bool> checkWritePermission() async {
     var status = await Permission.manageExternalStorage.status;
-
-    print("Checking Read Permission : " + status.toString());
     setState(() {
       _writePermissionCheck = true;
     });
@@ -55,10 +51,8 @@ class _statusStartupState extends State<statusStartup> {
   Future<int> requestReadPermission() async {
     int output = 0;
     if (await Permission.storage.request().isGranted) {
-      print("pass");
       // Either the permission was already granted before or the user just granted it.
       if (await Permission.manageExternalStorage.request().isGranted) {
-        print("pass 2");
         output = 1;
       }
     }
@@ -72,9 +66,6 @@ class _statusStartupState extends State<statusStartup> {
 
     _readwritePermissionChecker = (() async {
       int finalPermission;
-
-      print(
-          "Initial Values of $_readPermissionCheck AND $_writePermissionCheck");
       if (_readPermissionCheck == null || _readPermissionCheck == false) {
         _readPermissionCheck = await checkReadPermission();
       } else {
