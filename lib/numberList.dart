@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:open_whatsapp/open_whatsapp.dart';
 
 import 'package:localstorage/localstorage.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,8 +33,13 @@ class _MyNumberListState extends State<NumberList> {
     });
   }
 
-  _sendMessage(contactNumber) {
-    if (initialized) FlutterOpenWhatsapp.sendSingleMessage(contactNumber, "");
+  _sendMessage(contactNumber) async {
+    if (initialized) {
+      if (await canLaunch(url(contactNumber, ""))) {
+        await launch(url(contactNumber, ""));
+      }
+    }
+    //  FlutterOpenWhatsapp.sendSingleMessage(contactNumber, "");
   }
 
   // String url2(phone, message) {
