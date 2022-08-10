@@ -187,7 +187,7 @@ class _VideoGridState extends State<VideoGrid> {
             child: Card(
               elevation: 5,
               child: ClipPath(
-                child: StaggeredGridView.countBuilder(
+                child: MasonryGridView.count(
                   crossAxisSpacing: 3.0,
                   mainAxisSpacing: 3.0,
                   itemCount: videoList.length,
@@ -273,13 +273,13 @@ class _VideoGridState extends State<VideoGrid> {
                       return _getAdContainer();
                   },
                   crossAxisCount: 2,
-                  staggeredTileBuilder: (int index) {
-                    if (_list[index].type != "GoogleAd")
-                      return StaggeredTile.count(1, 1);
-                    else
-                      return StaggeredTile.count(2, 1);
-                    // return StaggeredTile.count(1, 1);
-                  },
+                  // staggeredTileBuilder: (int index) {
+                  //   if (_list[index].type != "GoogleAd")
+                  //     return StaggeredTile.count(1, 1);
+                  //   else
+                  //     return StaggeredTile.count(2, 1);
+                  //   // return StaggeredTile.count(1, 1);
+                  // },
                 ),
               ),
             ),

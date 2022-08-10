@@ -5,7 +5,7 @@ import 'package:whatschat/pages/photos.dart';
 import 'package:whatschat/pages/videos.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-const String testDevice = '62204e47-0a2c-4df6-b3e0-89e1aac39cdb';
+const String testDevice = '23A44FB0C82D65578152895CA43B5854';
 const int maxFailedLoadAttempts = 3;
 
 class DashboardScreen extends StatefulWidget {

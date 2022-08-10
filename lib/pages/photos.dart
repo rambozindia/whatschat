@@ -77,9 +77,9 @@ class PhotosState extends State<Photos> {
               child: Card(
                 elevation: 5,
                 child: ClipPath(
-                  child: StaggeredGridView.countBuilder(
+                  child: MasonryGridView.count(
                     padding: const EdgeInsets.all(8.0),
-                    crossAxisCount: 4,
+                    crossAxisCount: 2,
                     itemCount: imageList.length,
                     itemBuilder: (context, index) {
                       String imgPath = imageList[index];
@@ -102,8 +102,8 @@ class PhotosState extends State<Photos> {
                         ),
                       );
                     },
-                    staggeredTileBuilder: (i) =>
-                        StaggeredTile.count(2, i.isEven ? 2 : 3),
+                    // staggeredTileBuilder: (i) =>
+                    //     StaggeredTile.count(2, i.isEven ? 2 : 3),
                     mainAxisSpacing: 8.0,
                     crossAxisSpacing: 8.0,
                   ),

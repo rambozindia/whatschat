@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:open_whatsapp/open_whatsapp.dart';
+import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:localstorage/localstorage.dart';
@@ -15,7 +15,7 @@ class numberToChat extends StatefulWidget {
   _numberToChatState createState() => _numberToChatState();
 }
 
-const String testDevice = '62204e47-0a2c-4df6-b3e0-89e1aac39cdb';
+const String testDevice = '23A44FB0C82D65578152895CA43B5854';
 const int maxFailedLoadAttempts = 3;
 
 class _numberToChatState extends State<numberToChat> {
@@ -165,8 +165,8 @@ class _numberToChatState extends State<numberToChat> {
   }
 
   covid_certificate() async {
-    if (await canLaunch(url("919013151515", "covid certificate"))) {
-      await launch(url("919013151515", "covid certificate"));
+    if (await canLaunch(url("919013151515", "Main Menu"))) {
+      await launch(url("919013151515", "Main Menu"));
       // await launch(
       //     url2(countrycd.toString() + contactNumber.text, message.text));
     }
