@@ -30,7 +30,6 @@ dependencies:
   flutter:
     sdk: flutter
   curved_navigation_bar: ^1.0.1
-  whatsapp_unilink: ^2.0.2
   country_code_picker: ^2.0.2
   google_mobile_ads: ^0.13.2
   localstorage: ^4.0.0+1
@@ -45,6 +44,7 @@ dependencies:
   image_gallery_saver: '^1.7.1'
   video_player: ^2.1.10
   package_info: ^2.0.2
+  flutter_custom_tabs: ^1.0.4
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -79,6 +79,7 @@ flutter:
     - images/video_loader.gif
     - images/avatar.png
     - images/banner.jpg
+    - images/gamezop_game_banner_vertical.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

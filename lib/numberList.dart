@@ -73,9 +73,9 @@ class _MyNumberListState extends State<NumberList> {
         backgroundColor: Colors.deepOrange,
         elevation: 50.0,
         leading: IconButton(
-          icon: Icon(Icons.list),
+          icon: Icon(Icons.arrow_back),
           tooltip: 'Menu Icon',
-          onPressed: () {},
+          onPressed: () => Navigator.of(context).pop(),
         ), //IconButton
         brightness: Brightness.dark,
       ), //AppBar
@@ -196,7 +196,7 @@ class _MyNumberListState extends State<NumberList> {
                                   icon: Icon(
                                     Icons.delete,
                                     color: Colors.white,
-                                    size: 24.0,
+                                    size: 20.0,
                                   ),
                                   label: Text('Clear'),
                                   onPressed: _clearStorage,
@@ -213,7 +213,7 @@ class _MyNumberListState extends State<NumberList> {
                                   icon: Icon(
                                     Icons.refresh,
                                     color: Colors.white,
-                                    size: 24.0,
+                                    size: 20.0,
                                   ),
                                   label: Text('Refresh'),
                                   onPressed: _refreshStorage,

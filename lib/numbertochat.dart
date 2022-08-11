@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'numberList.dart';
 
 class numberToChat extends StatefulWidget {
   numberToChat({Key? key}) : super(key: key);
@@ -275,6 +276,16 @@ class _numberToChatState extends State<numberToChat> {
                                       },
                                     ),
                                   ),
+                                  InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          new MaterialPageRoute(
+                                              builder: (context) =>
+                                                  new NumberList()),
+                                        );
+                                      },
+                                      child: Icon(Icons.history, size: 30))
                                 ],
                               ),
                               TextFormField(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:whatschat/pages/gamezop_cct.dart';
 // import 'package:flutter_launch/flutter_launch.dart';
 
 import 'numbertochat.dart';
@@ -74,7 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
           items: <Widget>[
             Icon(Icons.add, size: 30),
             Icon(Icons.collections, size: 30),
-            Icon(Icons.history, size: 30),
+            // Icon(Icons.history, size: 30),
+            Icon(Icons.gamepad, size: 30),
             Icon(Icons.perm_identity, size: 30),
           ],
           color: Colors.white,
@@ -94,7 +96,8 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             numberToChat(),
             statusStartup(),
-            NumberList(),
+            // NumberList(),
+            GamezopCct(),
             aboutPage(),
           ],
         ));
