@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
+import 'package:whatschat/pages/file_manager_widget.dart';
 
 class GamezopCct extends StatelessWidget {
   const GamezopCct({Key? key}) : super(key: key);
@@ -42,6 +43,41 @@ class GamezopCct extends StatelessWidget {
                                     image: AssetImage(
                                         'images/gamezop_game_banner_vertical.jpg'),
                                   )),
+                            ),
+                          ),
+                        ),
+                        clipper: ShapeBorderClipper(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(3))),
+                      ),
+                    )),
+                Padding(
+                    padding: EdgeInsets.fromLTRB(10, 10, 10, 30),
+                    child: Card(
+                      elevation: 5,
+                      child: ClipPath(
+                        child: Center(
+                          child: Card(
+                            elevation: 5,
+                            child: ClipPath(
+                              clipper: ShapeBorderClipper(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(3))),
+                              child: ElevatedButton(
+                                child: Text('Open File Manager'),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (context) =>
+                                            new FileManagerWidget()),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.deepOrange,
+                                    textStyle: TextStyle(fontSize: 20),
+                                    minimumSize: Size(double.infinity, 50)),
+                              ),
                             ),
                           ),
                         ),
