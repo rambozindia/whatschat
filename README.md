@@ -27,7 +27,7 @@ Open the app chat any number you want without saving <br/>
 View the WhatsApp status of your friends and family <br/>
 
 # Support
-If you have any questions or need help with WhatsChat, please contact us at support@whatschat.com. We are always happy to assist you.
+If you have any questions or need help with WhatsChat, please contact us at @captainramkumar on telegram. We are always happy to assist you.
 
 # Contributions
 We welcome contributions to WhatsChat. If you have an idea for a new feature or have found a bug, please open an issue on our GitHub repository.
