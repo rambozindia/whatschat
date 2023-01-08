@@ -2,10 +2,10 @@
 WhatsChat is a messaging app that allows you to send messages to Whatsapp. Also view the whatsapp status such as photos, and videos.
 
 # Features
-Send message to whatsapp number without saving.
-Status Viewer
-Clean and user-friendly interface
-Games added
+Send message to whatsapp number without saving. __
+Status Viewer. __
+Clean and user-friendly interface. __
+Games added. __
 
 # Getting Started
 This is build with flutter.
@@ -13,14 +13,18 @@ you can clone the project and run
 
 ```
 git clone https://github.com/rambozindia/whatschat
+
 flutter run
 ```
 
 # How to Use
 
-Download WhatsChat from the Google Play Store
-Open the app and create an account
-Add your contacts and start chatting
+Download WhatsChat from the Google Play Store __
+
+https://play.google.com/store/apps/details?id=com.number.whatschat __
+
+Open the app chat any number you want without saving __
+View the WhatsApp status of your friends and family __
 
 # Support
 If you have any questions or need help with WhatsChat, please contact us at support@whatschat.com. We are always happy to assist you.
