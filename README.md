@@ -1,10 +1,7 @@
 # WhatsChat
 WhatsChat is a messaging app that allows you to send messages to Whatsapp. Also view the whatsapp status such as photos, and videos.
 
-<img src="https://user-images.githubusercontent.com/28587329/211209222-e275c3ab-5bde-4b4a-aa5e-3d87df041ee8.png" alt="drawing" width="200"/>
-<img src="https://user-images.githubusercontent.com/28587329/211209232-5c6cd947-b624-422f-8e0f-202b9032849b.png" alt="drawing" width="200"/>
-<img src="https://user-images.githubusercontent.com/28587329/211209241-7cd4a15d-7620-4190-b757-0c52029f90b7.png" alt="drawing" width="200"/>
-<img src="https://user-images.githubusercontent.com/28587329/211209249-e1aeda67-69c4-44f1-8a5e-101e09c0e10f.png" alt="drawing" width="200"/>
+<img src="https://user-images.githubusercontent.com/28587329/211209222-e275c3ab-5bde-4b4a-aa5e-3d87df041ee8.png" alt="drawing" width="200"/> <img src="https://user-images.githubusercontent.com/28587329/211209232-5c6cd947-b624-422f-8e0f-202b9032849b.png" alt="drawing" width="200"/> <img src="https://user-images.githubusercontent.com/28587329/211209241-7cd4a15d-7620-4190-b757-0c52029f90b7.png" alt="drawing" width="200"/> <img src="https://user-images.githubusercontent.com/28587329/211209249-e1aeda67-69c4-44f1-8a5e-101e09c0e10f.png" alt="drawing" width="200"/> 
 
 
 # Features
