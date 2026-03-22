@@ -37,7 +37,7 @@ If you have any questions or need help with WhatsChat, please contact us at @cap
 We welcome contributions to WhatsChat. If you have an idea for a new feature or have found a bug, please open an issue on our GitHub repository.
 
 # Donations 
-UPI : captain.ramkumar@ybl
+UPI : ramaxis@ybl
 
 # License
 WhatsChat is licensed under the MIT License.
