@@ -6,8 +6,11 @@ import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:numstatus/utils/favorites_helper.dart';
+
 class NumberList extends StatefulWidget {
-  NumberList({Key? key}) : super(key: key);
+  final bool showFavoritesOnly;
+  NumberList({Key? key, this.showFavoritesOnly = false}) : super(key: key);
 
   @override
   _MyNumberListState createState() => _MyNumberListState();
@@ -16,6 +19,13 @@ class NumberList extends StatefulWidget {
 class _MyNumberListState extends State<NumberList> {
   bool initialized = false;
   var mobNumbers = [];
+  late bool _showFavoritesOnly;
+
+  @override
+  void initState() {
+    super.initState();
+    _showFavoritesOnly = widget.showFavoritesOnly;
+  }
 
   _clearStorage() {
     localStorage.clear();
@@ -52,6 +62,14 @@ class _MyNumberListState extends State<NumberList> {
     }
   }
 
+  List _getFilteredNumbers() {
+    if (!_showFavoritesOnly) return mobNumbers;
+    final favorites = FavoritesHelper.getFavorites();
+    return mobNumbers
+        .where((item) => favorites.contains(item['mob']))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!initialized) {
@@ -63,11 +81,27 @@ class _MyNumberListState extends State<NumberList> {
       initialized = true;
     }
 
+    final filteredNumbers = _getFilteredNumbers();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Recent Numbers"),
-        actions: <Widget>[],
-        backgroundColor: Colors.deepOrange,
+        title: Text(_showFavoritesOnly ? "Favorites" : "Recent Numbers"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              _showFavoritesOnly ? Icons.star : Icons.star_border,
+              color: _showFavoritesOnly ? Colors.amber : null,
+            ),
+            tooltip: 'Toggle Favorites',
+            onPressed: () {
+              setState(() {
+                _showFavoritesOnly = !_showFavoritesOnly;
+              });
+            },
+          ),
+        ],
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 50.0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -77,7 +111,7 @@ class _MyNumberListState extends State<NumberList> {
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: Container(
-        color: Colors.deepOrange,
+        color: isDark ? Colors.grey[850] : Colors.deepOrange,
         child: Padding(
           padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
           child: Card(
@@ -94,53 +128,67 @@ class _MyNumberListState extends State<NumberList> {
                           flex: 1,
                           child: ListView.separated(
                             padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
-                            itemCount: mobNumbers.length,
+                            itemCount: filteredNumbers.length,
                             itemBuilder: (BuildContext context, int index) {
+                              final number = filteredNumbers[index]['mob'];
+                              final isFav =
+                                  FavoritesHelper.isFavorite(number);
                               return GestureDetector(
                                   child: Container(
                                       padding: const EdgeInsets.fromLTRB(
                                           10, 0, 10, 0),
                                       height: 50,
-                                      color: Colors.orange,
+                                      color: isDark
+                                          ? Colors.grey[700]
+                                          : Colors.orange,
                                       child: Row(
                                         children: [
                                           Expanded(
                                             child: Align(
                                                 alignment:
                                                     Alignment.centerLeft,
-                                                child: Text(
-                                                    mobNumbers[index]
-                                                        ['mob'])),
+                                                child: Text(number)),
                                           ),
                                           Align(
                                             alignment:
                                                 Alignment.centerRight,
                                             child: Row(
                                               children: [
-                                                Align(
-                                                  alignment:
-                                                      Alignment.centerRight,
-                                                  child: IconButton(
-                                                    icon: Icon(Icons.send),
-                                                    tooltip: 'Send Message',
-                                                    onPressed: () {
-                                                      launchUrl(
-                                                          Uri.parse(buildUrl(
-                                                              mobNumbers[
-                                                                      index]
-                                                                  ['mob'],
-                                                              "")),
-                                                          mode: LaunchMode
-                                                              .externalApplication);
-                                                    },
+                                                IconButton(
+                                                  icon: Icon(
+                                                    isFav
+                                                        ? Icons.star
+                                                        : Icons.star_border,
+                                                    color: isFav
+                                                        ? Colors.amber
+                                                        : null,
                                                   ),
+                                                  tooltip: 'Favorite',
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      FavoritesHelper
+                                                          .toggleFavorite(
+                                                              number);
+                                                    });
+                                                  },
+                                                ),
+                                                IconButton(
+                                                  icon: Icon(Icons.send),
+                                                  tooltip: 'Send Message',
+                                                  onPressed: () {
+                                                    launchUrl(
+                                                        Uri.parse(buildUrl(
+                                                            number, "")),
+                                                        mode: LaunchMode
+                                                            .externalApplication);
+                                                  },
                                                 ),
                                                 IconButton(
                                                   icon: Icon(Icons.call),
-                                                  tooltip: 'call',
+                                                  tooltip: 'Call',
                                                   onPressed: () {
                                                     launchUrl(Uri.parse(
-                                                        'tel:+${mobNumbers[index]['mob']}'));
+                                                        'tel:+$number'));
                                                   },
                                                 ),
                                                 IconButton(
@@ -148,7 +196,7 @@ class _MyNumberListState extends State<NumberList> {
                                                   tooltip: 'Message',
                                                   onPressed: () {
                                                     launchUrl(Uri.parse(
-                                                        'sms:+${mobNumbers[index]['mob']}'));
+                                                        'sms:+$number'));
                                                   },
                                                 ),
                                               ],
@@ -157,7 +205,7 @@ class _MyNumberListState extends State<NumberList> {
                                         ],
                                       )),
                                   onTap: () {
-                                    _sendMessage(mobNumbers[index]['mob']);
+                                    _sendMessage(number);
                                   });
                             },
                             separatorBuilder:

@@ -8,6 +8,8 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:numstatus/utils/constants.dart';
+import 'package:numstatus/pages/qr_scanner.dart';
 import 'numberList.dart';
 
 class numberToChat extends StatefulWidget {
@@ -24,6 +26,8 @@ class _numberToChatState extends State<numberToChat> {
   final contactNumber = TextEditingController();
   final message = TextEditingController();
   int countrycd = 91;
+  String? _clipboardNumber;
+  String _selectedCountryName = 'India';
 
   static final AdRequest request = AdRequest();
 
@@ -37,6 +41,39 @@ class _numberToChatState extends State<numberToChat> {
   void initState() {
     super.initState();
     _createInterstitialAd();
+    _checkClipboard();
+  }
+
+  Future<void> _checkClipboard() async {
+    try {
+      final clipData = await Clipboard.getData(Clipboard.kTextPlain);
+      if (clipData?.text != null) {
+        final text = clipData!.text!.trim();
+        final cleaned = text.replaceAll(RegExp(r'[\s\-()]'), '');
+        final phoneRegex = RegExp(r'^\+?\d{7,15}$');
+        if (phoneRegex.hasMatch(cleaned)) {
+          setState(() {
+            _clipboardNumber = cleaned;
+          });
+        }
+      }
+    } catch (_) {}
+  }
+
+  void _useClipboardNumber() {
+    if (_clipboardNumber != null) {
+      String number = _clipboardNumber!;
+      if (number.startsWith('+')) {
+        number = number.substring(1);
+      }
+      // Try to extract country code (assume first 2-3 digits could be country code)
+      contactNumber.text = number.length > 10
+          ? number.substring(number.length - 10)
+          : number;
+      setState(() {
+        _clipboardNumber = null;
+      });
+    }
   }
 
   void _createInterstitialAd() {
@@ -87,9 +124,7 @@ class _numberToChatState extends State<numberToChat> {
       MediaQuery.of(context).size.width.truncate(),
     );
 
-    if (size == null) {
-      return;
-    }
+    if (size == null) return;
 
     final BannerAd banner = BannerAd(
       size: size,
@@ -111,6 +146,7 @@ class _numberToChatState extends State<numberToChat> {
 
   void _onCountryChange(CountryCode countryCode) {
     countrycd = int.parse(countryCode.toString());
+    _selectedCountryName = countryCode.name ?? '';
   }
 
   _addItem(String mobileNumber) {
@@ -153,13 +189,37 @@ class _numberToChatState extends State<numberToChat> {
     }
   }
 
+  Future<void> _openQrScanner() async {
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (context) => QrScannerScreen()),
+    );
+    if (result != null && mounted) {
+      String number = result;
+      if (number.startsWith('+')) {
+        number = number.substring(1);
+      }
+      contactNumber.text =
+          number.length > 10 ? number.substring(number.length - 10) : number;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.grey[850]! : Colors.deepOrange;
+
     return Scaffold(
         appBar: AppBar(
           title: Text("Number Status Download"),
-          actions: <Widget>[],
-          backgroundColor: Colors.deepOrange,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.qr_code_scanner),
+              tooltip: 'Scan QR Code',
+              onPressed: _openQrScanner,
+            ),
+          ],
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           elevation: 50.0,
           leading: IconButton(
             icon: Icon(Icons.shield),
@@ -168,7 +228,7 @@ class _numberToChatState extends State<numberToChat> {
           ),
           systemOverlayStyle: SystemUiOverlayStyle.light,
         ),
-        body: _getMain());
+        body: _getMain(bgColor));
   }
 
   @override
@@ -178,15 +238,34 @@ class _numberToChatState extends State<numberToChat> {
     _anchoredBanner?.dispose();
   }
 
-  Widget _getMain() {
+  Widget _getMain(Color bgColor) {
     if (!_loadingAnchoredBanner) {
       _loadingAnchoredBanner = true;
       _createAnchoredBanner(context);
     }
     return Container(
-        color: Colors.deepOrange,
+        color: bgColor,
         child: ListView(
           children: [
+            // Clipboard detection banner
+            if (_clipboardNumber != null)
+              Padding(
+                padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                child: Card(
+                  color: Colors.green[50],
+                  child: ListTile(
+                    leading: Icon(Icons.content_paste, color: Colors.green),
+                    title: Text('Phone number detected'),
+                    subtitle: Text(_clipboardNumber!),
+                    trailing: ElevatedButton(
+                      child: Text('Use'),
+                      onPressed: _useClipboardNumber,
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green),
+                    ),
+                  ),
+                ),
+              ),
             Padding(
               padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: Card(
@@ -242,20 +321,48 @@ class _numberToChatState extends State<numberToChat> {
                                         }
                                         return null;
                                       },
+                                      onChanged: (value) {
+                                        setState(() {});
+                                      },
                                     ),
                                   ),
                                   InkWell(
                                       onTap: () {
                                         Navigator.push(
                                           context,
-                                          new MaterialPageRoute(
+                                          MaterialPageRoute(
                                               builder: (context) =>
-                                                  new NumberList()),
+                                                  NumberList()),
                                         );
                                       },
-                                      child: Icon(Icons.history, size: 30))
+                                      child: Icon(Icons.history, size: 30)),
+                                  SizedBox(width: 8),
+                                  InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  NumberList(showFavoritesOnly: true)),
+                                        );
+                                      },
+                                      child: Icon(Icons.star, size: 30, color: Colors.amber)),
                                 ],
                               ),
+                              // Number info display
+                              if (contactNumber.text.length >= 8)
+                                Padding(
+                                  padding: EdgeInsets.only(top: 4),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      '$_selectedCountryName (+$countrycd) ${contactNumber.text}',
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600]),
+                                    ),
+                                  ),
+                                ),
                               TextFormField(
                                 controller: message,
                                 maxLines: 5,
@@ -266,7 +373,6 @@ class _numberToChatState extends State<numberToChat> {
                               Padding(
                                 padding: EdgeInsets.only(top: 10),
                                 child: ElevatedButton(
-                                  child: Text('Send Message'),
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
                                       _showInterstitialAd();
@@ -276,13 +382,15 @@ class _numberToChatState extends State<numberToChat> {
                                       backgroundColor: Colors.deepOrange,
                                       textStyle: TextStyle(fontSize: 20),
                                       minimumSize: Size(double.infinity, 50)),
+                                  child: Text('Send Message'),
                                 ),
                               ),
                               Align(
                                 alignment: Alignment(0, 1.0),
                                 child: Padding(
                                     padding: EdgeInsets.all(20),
-                                    child: Text("Made with \u2764\uFE0F in India")),
+                                    child: Text(
+                                        "Made with \u2764\uFE0F in India")),
                               ),
                               Container(
                                 height: 100,
@@ -323,31 +431,4 @@ class _numberToChatState extends State<numberToChat> {
           ],
         ));
   }
-}
-
-String getBannerAdUnitId() {
-  if (Platform.isIOS) {
-    return 'ca-app-pub-5924361002999470/2628163306';
-  } else if (Platform.isAndroid) {
-    return 'ca-app-pub-5924361002999470/2628163306';
-  }
-  return "";
-}
-
-String getNativedUnitId() {
-  if (Platform.isIOS) {
-    return 'ca-app-pub-5924361002999470/4345357040';
-  } else if (Platform.isAndroid) {
-    return 'ca-app-pub-5924361002999470/4345357040';
-  }
-  return "";
-}
-
-String getInterstitialAdUnitId() {
-  if (Platform.isIOS) {
-    return 'ca-app-pub-5924361002999470/4978515543';
-  } else if (Platform.isAndroid) {
-    return 'ca-app-pub-5924361002999470/4978515543';
-  }
-  return "";
 }

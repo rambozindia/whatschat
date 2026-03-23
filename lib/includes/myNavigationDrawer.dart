@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 
+import 'package:numstatus/main.dart';
+
 class MyNavigationDrawer extends StatelessWidget {
   final _menutextcolor = TextStyle(
     color: Colors.black,
@@ -14,6 +16,12 @@ class MyNavigationDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textStyle = isDark
+        ? _menutextcolor.copyWith(color: Colors.white)
+        : _menutextcolor;
+    final appState = MyApp.of(context);
+
     return ListView(
       padding: EdgeInsets.all(0),
       children: <Widget>[
@@ -32,7 +40,7 @@ class MyNavigationDrawer extends StatelessWidget {
             data: _iconcolor,
             child: Icon(Icons.photo_library),
           ),
-          title: Text("Photo Status", style: _menutextcolor),
+          title: Text("Photo Status", style: textStyle),
           onTap: () {
             Navigator.of(context).pop();
             Navigator.of(context).pushNamed("/photos");
@@ -43,10 +51,22 @@ class MyNavigationDrawer extends StatelessWidget {
             data: _iconcolor,
             child: Icon(Icons.video_library),
           ),
-          title: Text("Video Status", style: _menutextcolor),
+          title: Text("Video Status", style: textStyle),
           onTap: () {
             Navigator.of(context).pop();
             Navigator.of(context).pushNamed("/videos");
+          },
+        ),
+        // Dark Mode Toggle
+        SwitchListTile(
+          secondary: IconTheme(
+            data: _iconcolor,
+            child: Icon(isDark ? Icons.dark_mode : Icons.light_mode),
+          ),
+          title: Text("Dark Mode", style: textStyle),
+          value: isDark,
+          onChanged: (value) {
+            appState?.themeNotifier.toggleTheme();
           },
         ),
         ListTile(
@@ -54,7 +74,7 @@ class MyNavigationDrawer extends StatelessWidget {
             data: _iconcolor,
             child: Icon(Icons.info),
           ),
-          title: Text("About Us", style: _menutextcolor),
+          title: Text("About Us", style: textStyle),
           onTap: () {
             Navigator.of(context).pop();
             Navigator.of(context).pushNamed("/aboutus");
@@ -65,7 +85,7 @@ class MyNavigationDrawer extends StatelessWidget {
             data: _iconcolor,
             child: Icon(Icons.share),
           ),
-          title: Text("Share with Friends", style: _menutextcolor),
+          title: Text("Share with Friends", style: textStyle),
           onTap: () {
             Share.share(
               "Hello, Good News\n\n*Download Anyone's Status* \n\nDownload Your Contact's Status Photos\nDownload Your Contact's Video Status \n\n*Just Download this Application and You will be able to download other's photo and video Status* \n\n \u{1F447}\u{1F447}\u{1F447}\u{1F447}\u{1F447} \nDownload Now\nhttp://bit.ly/status-download",
@@ -77,7 +97,7 @@ class MyNavigationDrawer extends StatelessWidget {
             data: _iconcolor,
             child: Icon(Icons.rate_review),
           ),
-          title: Text("Rate and Review", style: _menutextcolor),
+          title: Text("Rate and Review", style: textStyle),
           onTap: () async {
             Navigator.of(context).pop();
             final url = Uri.parse(
@@ -92,7 +112,7 @@ class MyNavigationDrawer extends StatelessWidget {
             data: _iconcolor,
             child: Icon(Icons.security),
           ),
-          title: Text("Privacy Policy", style: _menutextcolor),
+          title: Text("Privacy Policy", style: textStyle),
           onTap: () async {
             Navigator.of(context).pop();
             final url = Uri.parse('https://blueburn.in');

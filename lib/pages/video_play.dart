@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:numstatus/pages/video_controller.dart';
+import 'package:numstatus/utils/dialogs.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayStatusVideo extends StatefulWidget {
@@ -15,112 +16,34 @@ class PlayStatusVideo extends StatefulWidget {
 
 class _PlayStatusVideoState extends State<PlayStatusVideo> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  void dispose() {
-    super.dispose();
-  }
-
-  void _onLoading(bool t, String str) {
-    if (t) {
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return SimpleDialog(
-              children: <Widget>[
-                Center(
-                  child: Container(
-                      padding: EdgeInsets.all(10.0),
-                      child: CircularProgressIndicator()),
-                ),
-              ],
-            );
-          });
-    } else {
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SimpleDialog(
-                children: <Widget>[
-                  Center(
-                    child: Container(
-                      padding: EdgeInsets.all(15.0),
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            "Great, Saved in Gallery",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(10.0),
-                          ),
-                          Text(str,
-                              style: TextStyle(
-                                fontSize: 16.0,
-                              )),
-                          Padding(
-                            padding: EdgeInsets.all(10.0),
-                          ),
-                          Text("FileManager > Downloaded Status",
-                              style: TextStyle(
-                                  fontSize: 16.0, color: Colors.teal)),
-                          Padding(
-                            padding: EdgeInsets.all(10.0),
-                          ),
-                          MaterialButton(
-                            child: Text("Close"),
-                            color: Colors.teal,
-                            textColor: Colors.white,
-                            onPressed: () => Navigator.pop(context),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.grey[850]! : Colors.deepOrange;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
           color: Colors.indigo,
-          icon: Icon(
-            Icons.close,
-            color: Colors.black,
-          ),
+          icon: Icon(Icons.close, color: isDark ? Colors.white : Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Container(
-            padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 5.0),
+            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5.0),
             child: Row(
               children: [
                 ElevatedButton.icon(
-                  label: Text(
-                    'Save',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
+                  label: Text('Save', style: TextStyle(fontSize: 14.0)),
                   onPressed: () async {
                     File originalVideoFile = File(widget.videoFile);
-                    Directory? directory = await getExternalStorageDirectory();
+                    Directory? directory =
+                        await getExternalStorageDirectory();
                     if (!Directory(
                             "${directory!.path}/Downloaded Status/Videos")
                         .existsSync()) {
-                      Directory("${directory.path}/Downloaded Status/Videos")
+                      Directory(
+                              "${directory.path}/Downloaded Status/Videos")
                           .createSync(recursive: true);
                     }
                     String path = directory.path;
@@ -129,22 +52,21 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
                         "$path/Downloaded Status/Videos/VIDEO-$curDate.mp4";
                     await originalVideoFile.copy(newFileName);
 
-                    _onLoading(false,
-                        "If Video not available in gallery\n\nYou can find all videos at");
+                    if (mounted) {
+                      showSaveSuccessDialog(context,
+                          "If Video not available in gallery\n\nYou can find all videos at");
+                    }
                   },
                   icon: Icon(Icons.file_download),
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepOrange,
                       padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                      textStyle: TextStyle(fontSize: 20)),
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      textStyle: TextStyle(fontSize: 16)),
                 ),
-                SizedBox(width: 10),
+                SizedBox(width: 6),
                 ElevatedButton.icon(
-                  label: Text(
-                    'Share',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
+                  label: Text('Share', style: TextStyle(fontSize: 14.0)),
                   onPressed: () async {
                     await Share.shareXFiles(
                       [XFile(widget.videoFile)],
@@ -155,14 +77,30 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepOrange,
                       padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                      textStyle: TextStyle(fontSize: 20)),
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      textStyle: TextStyle(fontSize: 16)),
+                ),
+                SizedBox(width: 6),
+                ElevatedButton.icon(
+                  label: Text('Repost', style: TextStyle(fontSize: 14.0)),
+                  onPressed: () async {
+                    await Share.shareXFiles(
+                      [XFile(widget.videoFile)],
+                      text: "Repost via Number Status Download",
+                    );
+                  },
+                  icon: Icon(Icons.repeat),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      textStyle: TextStyle(fontSize: 16)),
                 ),
               ],
             )),
       ),
       body: Container(
-        color: Colors.deepOrange,
+        color: bgColor,
         child: Padding(
           padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
           child: Card(

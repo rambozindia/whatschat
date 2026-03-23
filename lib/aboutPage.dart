@@ -3,6 +3,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'package:numstatus/main.dart';
 import 'pages/about_us.dart';
 
 class aboutPage extends StatefulWidget {
@@ -51,8 +52,12 @@ class _aboutPageState extends State<aboutPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.grey[850]! : Colors.deepOrange;
+    final appState = MyApp.of(context);
+
     return Container(
-      color: Colors.deepOrange,
+      color: bgColor,
       child: Padding(
         padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
         child: Card(
@@ -71,6 +76,21 @@ class _aboutPageState extends State<aboutPage> {
                   accountEmail: Text("Easily Download Status & Chat"),
                   currentAccountPicture: Image.asset('images/avatar.png'),
                 ),
+                // Dark Mode Toggle
+                SwitchListTile(
+                  secondary: IconTheme(
+                    data: _iconcolor,
+                    child: Icon(isDark ? Icons.dark_mode : Icons.light_mode),
+                  ),
+                  title: Text("Dark Mode",
+                      style: isDark
+                          ? _menutextcolor.copyWith(color: Colors.white)
+                          : _menutextcolor),
+                  value: isDark,
+                  onChanged: (value) {
+                    appState?.themeNotifier.toggleTheme();
+                  },
+                ),
                 ListTile(
                   leading: IconTheme(
                     data: _iconcolor,
@@ -80,8 +100,8 @@ class _aboutPageState extends State<aboutPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      new MaterialPageRoute(
-                          builder: (context) => new AboutScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => AboutScreen()),
                     );
                   },
                 ),
@@ -107,7 +127,8 @@ class _aboutPageState extends State<aboutPage> {
                     final url = Uri.parse(
                         'https://play.google.com/store/apps/details?id=com.blueburn.numstatus');
                     if (await canLaunchUrl(url)) {
-                      await launchUrl(url, mode: LaunchMode.externalApplication);
+                      await launchUrl(url,
+                          mode: LaunchMode.externalApplication);
                     }
                   },
                 ),
@@ -118,9 +139,11 @@ class _aboutPageState extends State<aboutPage> {
                   ),
                   title: Text("Privacy Policy", style: _menutextcolor),
                   onTap: () async {
-                    final url = Uri.parse('https://www.blueburn.in/projects/');
+                    final url =
+                        Uri.parse('https://www.blueburn.in/projects/');
                     if (await canLaunchUrl(url)) {
-                      await launchUrl(url, mode: LaunchMode.externalApplication);
+                      await launchUrl(url,
+                          mode: LaunchMode.externalApplication);
                     }
                   },
                 ),

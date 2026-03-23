@@ -2,9 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:numstatus/pages/dashboard.dart';
-import 'package:numstatus/pages/photos.dart';
-import 'package:numstatus/pages/videos.dart';
-import 'package:numstatus/pages/about_us.dart';
 import 'package:numstatus/includes/myNavigationDrawer.dart';
 
 class statusStartup extends StatefulWidget {
@@ -42,7 +39,6 @@ class _statusStartupState extends State<statusStartup> {
   Future<int> requestReadPermission() async {
     int output = 0;
     if (Platform.isAndroid) {
-      // For Android 13+, request media permissions
       if (await Permission.photos.request().isGranted ||
           await Permission.storage.request().isGranted) {
         if (await Permission.manageExternalStorage.request().isGranted) {
@@ -80,61 +76,20 @@ class _statusStartupState extends State<statusStartup> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Status Downloader',
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
-      ),
-      debugShowCheckedModeBanner: false,
-      home: FutureBuilder(
-        future: _readwritePermissionChecker,
-        builder: (context, status) {
-          if (status.connectionState == ConnectionState.done) {
-            if (status.hasData) {
-              if (status.data == 1) {
-                return statusDashboard();
-              } else {
-                return Scaffold(
-                  body: Container(
-                    color: Colors.deepOrange,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Text(
-                              "File Read Permission Required",
-                              style: TextStyle(
-                                  fontSize: 20.0, color: Colors.white),
-                            ),
-                          ),
-                          ElevatedButton(
-                              child: Text('Allow File Read Permission'),
-                              onPressed: () {
-                                setState(() {
-                                  _readwritePermissionChecker =
-                                      requestReadPermission();
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: Colors.black,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 40, vertical: 20),
-                                textStyle: TextStyle(fontSize: 20),
-                              )),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.grey[850]! : Colors.deepOrange;
+
+    return FutureBuilder(
+      future: _readwritePermissionChecker,
+      builder: (context, status) {
+        if (status.connectionState == ConnectionState.done) {
+          if (status.hasData) {
+            if (status.data == 1) {
+              return statusDashboard();
             } else {
               return Scaffold(
                 body: Container(
-                  color: Colors.deepOrange,
+                  color: bgColor,
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -143,10 +98,26 @@ class _statusStartupState extends State<statusStartup> {
                         Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: Text(
-                            "Something went wrong.. Please uninstall and Install Again.",
-                            style: TextStyle(fontSize: 20.0),
+                            "File Read Permission Required",
+                            style: TextStyle(
+                                fontSize: 20.0, color: Colors.white),
                           ),
                         ),
+                        ElevatedButton(
+                            child: Text('Allow File Read Permission'),
+                            onPressed: () {
+                              setState(() {
+                                _readwritePermissionChecker =
+                                    requestReadPermission();
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 40, vertical: 20),
+                              textStyle: TextStyle(fontSize: 20),
+                            )),
                       ],
                     ),
                   ),
@@ -156,20 +127,35 @@ class _statusStartupState extends State<statusStartup> {
           } else {
             return Scaffold(
               body: Container(
-                color: Colors.deepOrange,
+                color: bgColor,
                 child: Center(
-                  child: CircularProgressIndicator(),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Text(
+                          "Something went wrong.. Please uninstall and Install Again.",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
           }
-        },
-      ),
-      routes: <String, WidgetBuilder>{
-        "/home": (BuildContext context) => DashboardScreen(),
-        "/photos": (BuildContext context) => Photos(),
-        "/videos": (BuildContext context) => VideoListView(),
-        "/aboutus": (BuildContext context) => AboutScreen(),
+        } else {
+          return Scaffold(
+            body: Container(
+              color: bgColor,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        }
       },
     );
   }

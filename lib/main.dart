@@ -3,6 +3,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:numstatus/pages/gamezop_cct.dart';
+import 'package:numstatus/utils/theme.dart';
 
 import 'numbertochat.dart';
 import 'statusStartup.dart';
@@ -15,16 +16,36 @@ void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+
+  static _MyAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>();
+}
+
+class _MyAppState extends State<MyApp> {
+  final ThemeNotifier _themeNotifier = ThemeNotifier();
+
+  @override
+  void initState() {
+    super.initState();
+    _themeNotifier.addListener(() {
+      setState(() {});
+    });
+  }
+
+  ThemeNotifier get themeNotifier => _themeNotifier;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Number Status Download',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: _themeNotifier.themeMode,
+      home: MyHomePage(title: 'Number Status Download'),
     );
   }
 }
@@ -44,6 +65,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.grey[850]! : Colors.deepOrange;
+
     return Scaffold(
         bottomNavigationBar: CurvedNavigationBar(
           key: _bottomNavigationKey,
@@ -55,9 +79,9 @@ class _MyHomePageState extends State<MyHomePage> {
             Icon(Icons.gamepad, size: 30),
             Icon(Icons.perm_identity, size: 30),
           ],
-          color: Colors.white,
-          buttonBackgroundColor: Colors.white,
-          backgroundColor: Colors.deepOrange,
+          color: isDark ? Colors.grey[800]! : Colors.white,
+          buttonBackgroundColor: isDark ? Colors.grey[800]! : Colors.white,
+          backgroundColor: bgColor,
           animationCurve: Curves.easeInOut,
           animationDuration: Duration(milliseconds: 300),
           onTap: (index) {
