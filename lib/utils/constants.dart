@@ -5,20 +5,6 @@ import 'package:flutter/material.dart';
 // App info
 const String appName = 'Number Status Download';
 
-// Status directory paths for supported apps
-final Map<String, List<Directory>> statusDirectories = {
-  'whatsapp': [
-    Directory('/storage/emulated/0/WhatsApp/Media/.Statuses'),
-    Directory(
-        '/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses'),
-  ],
-  'whatsapp_business': [
-    Directory('/storage/emulated/0/WhatsApp Business/Media/.Statuses'),
-    Directory(
-        '/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses'),
-  ],
-};
-
 // Supported image extensions
 const List<String> imageExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
 

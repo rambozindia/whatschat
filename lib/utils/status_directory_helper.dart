@@ -1,52 +1,21 @@
-import 'dart:io';
+import 'package:numstatus/models/status_file.dart';
+import 'package:numstatus/services/saf_directory_service.dart';
+import 'package:numstatus/utils/constants.dart';
 
-import 'constants.dart';
-
-List<Directory> getAvailableStatusDirs(String appType) {
-  final dirs = statusDirectories[appType] ?? [];
-  return dirs.where((dir) => dir.existsSync()).toList();
+Future<List<StatusFile>> getStatusImages(String appType) async {
+  return await SafDirectoryService.listFiles(appType, imageExtensions);
 }
 
-List<String> getStatusImages(String appType) {
-  final dirs = getAvailableStatusDirs(appType);
-  final List<String> images = [];
-  for (final dir in dirs) {
-    images.addAll(dir
-        .listSync()
-        .map((item) => item.path)
-        .where((item) =>
-            imageExtensions.any((ext) => item.toLowerCase().endsWith(ext)))
-        .toList());
-  }
-  return images;
+Future<List<StatusFile>> getStatusVideos(String appType) async {
+  return await SafDirectoryService.listFiles(appType, videoExtensions);
 }
 
-List<String> getStatusVideos(String appType) {
-  final dirs = getAvailableStatusDirs(appType);
-  final List<String> videos = [];
-  for (final dir in dirs) {
-    videos.addAll(dir
-        .listSync()
-        .map((item) => item.path)
-        .where((item) =>
-            videoExtensions.any((ext) => item.toLowerCase().endsWith(ext)))
-        .toList());
-  }
-  return videos;
+Future<bool> hasAnyStatusDirs(String appType) async {
+  return await SafDirectoryService.hasPersistedUri(appType);
 }
 
-bool hasAnyStatusDirs(String appType) {
-  return getAvailableStatusDirs(appType).isNotEmpty;
-}
-
-List<String> getAvailableApps() {
-  final apps = <String>[];
-  for (final appType in statusDirectories.keys) {
-    if (hasAnyStatusDirs(appType)) {
-      apps.add(appType);
-    }
-  }
-  return apps;
+Future<List<String>> getAvailableApps() async {
+  return await SafDirectoryService.getAvailableApps();
 }
 
 String getAppLabel(String appType) {

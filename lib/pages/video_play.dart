@@ -2,19 +2,70 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:numstatus/models/status_file.dart';
+import 'package:numstatus/services/saf_directory_service.dart';
 import 'package:numstatus/pages/video_controller.dart';
 import 'package:numstatus/utils/dialogs.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayStatusVideo extends StatefulWidget {
-  final String videoFile;
-  PlayStatusVideo(this.videoFile);
+  final StatusFile? statusFile;
+  final String? localPath;
+
+  PlayStatusVideo(dynamic source, {Key? key})
+      : statusFile = source is StatusFile ? source : null,
+        localPath = source is String ? source : null,
+        super(key: key);
 
   @override
   _PlayStatusVideoState createState() => _PlayStatusVideoState();
 }
 
 class _PlayStatusVideoState extends State<PlayStatusVideo> {
+  File? _localFile;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _prepareVideo();
+  }
+
+  Future<void> _prepareVideo() async {
+    File? file;
+    if (widget.localPath != null) {
+      file = File(widget.localPath!);
+    } else if (widget.statusFile != null) {
+      file = await SafDirectoryService.copyToCache(widget.statusFile!);
+    }
+    if (mounted) {
+      setState(() {
+        _localFile = file;
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _saveVideo() async {
+    if (_localFile == null) return;
+    Directory? directory = await getExternalStorageDirectory();
+    if (directory == null) return;
+
+    String videoDir = "${directory.path}/Downloaded Status/Videos";
+    if (!Directory(videoDir).existsSync()) {
+      Directory(videoDir).createSync(recursive: true);
+    }
+
+    String curDate = DateTime.now().millisecondsSinceEpoch.toString();
+    String newFileName = "$videoDir/VIDEO-$curDate.mp4";
+    await _localFile!.copy(newFileName);
+
+    if (mounted) {
+      showSaveSuccessDialog(context,
+          "If Video not available in gallery\n\nYou can find all videos at");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -25,7 +76,6 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          color: Colors.indigo,
           icon: Icon(Icons.close, color: isDark ? Colors.white : Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -35,28 +85,7 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
               children: [
                 ElevatedButton.icon(
                   label: Text('Save', style: TextStyle(fontSize: 14.0)),
-                  onPressed: () async {
-                    File originalVideoFile = File(widget.videoFile);
-                    Directory? directory =
-                        await getExternalStorageDirectory();
-                    if (!Directory(
-                            "${directory!.path}/Downloaded Status/Videos")
-                        .existsSync()) {
-                      Directory(
-                              "${directory.path}/Downloaded Status/Videos")
-                          .createSync(recursive: true);
-                    }
-                    String path = directory.path;
-                    String curDate = DateTime.now().toString();
-                    String newFileName =
-                        "$path/Downloaded Status/Videos/VIDEO-$curDate.mp4";
-                    await originalVideoFile.copy(newFileName);
-
-                    if (mounted) {
-                      showSaveSuccessDialog(context,
-                          "If Video not available in gallery\n\nYou can find all videos at");
-                    }
-                  },
+                  onPressed: _saveVideo,
                   icon: Icon(Icons.file_download),
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepOrange,
@@ -68,10 +97,12 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
                 ElevatedButton.icon(
                   label: Text('Share', style: TextStyle(fontSize: 14.0)),
                   onPressed: () async {
-                    await Share.shareXFiles(
-                      [XFile(widget.videoFile)],
-                      text: "Share from Number Status Download",
-                    );
+                    if (_localFile != null) {
+                      await Share.shareXFiles(
+                        [XFile(_localFile!.path)],
+                        text: "Share from Number Status Download",
+                      );
+                    }
                   },
                   icon: Icon(Icons.share),
                   style: ElevatedButton.styleFrom(
@@ -84,10 +115,12 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
                 ElevatedButton.icon(
                   label: Text('Repost', style: TextStyle(fontSize: 14.0)),
                   onPressed: () async {
-                    await Share.shareXFiles(
-                      [XFile(widget.videoFile)],
-                      text: "Repost via Number Status Download",
-                    );
+                    if (_localFile != null) {
+                      await Share.shareXFiles(
+                        [XFile(_localFile!.path)],
+                        text: "Repost via Number Status Download",
+                      );
+                    }
                   },
                   icon: Icon(Icons.repeat),
                   style: ElevatedButton.styleFrom(
@@ -106,13 +139,17 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
           child: Card(
             elevation: 5,
             child: ClipPath(
-              child: StatusVideo(
-                videoPlayerController:
-                    VideoPlayerController.file(File(widget.videoFile)),
-                looping: true,
-                videoSrc: widget.videoFile,
-                aspectRatio: 6 / 9,
-              ),
+              child: _loading
+                  ? Center(child: CircularProgressIndicator())
+                  : _localFile != null
+                      ? StatusVideo(
+                          videoPlayerController:
+                              VideoPlayerController.file(_localFile!),
+                          looping: true,
+                          videoSrc: _localFile!.path,
+                          aspectRatio: 6 / 9,
+                        )
+                      : Center(child: Text('Failed to load video')),
             ),
           ),
         ),

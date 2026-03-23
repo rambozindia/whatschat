@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import 'package:numstatus/models/status_file.dart';
 import 'package:numstatus/utils/constants.dart' show getBannerAdUnitId;
 import 'package:numstatus/utils/status_directory_helper.dart';
 import 'package:numstatus/utils/status_saver.dart';
 import 'package:numstatus/utils/status_history.dart';
+import 'package:numstatus/services/saf_directory_service.dart';
 import 'package:numstatus/pages/photos.dart';
 import 'package:numstatus/pages/videos.dart';
 import 'package:numstatus/pages/status_history.dart';
@@ -19,6 +21,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
   String _selectedApp = 'whatsapp';
+  List<String> _availableApps = ['whatsapp'];
   static final AdRequest request = AdRequest();
 
   BannerAd? _anchoredBanner;
@@ -28,8 +31,19 @@ class _DashboardScreenState extends State<DashboardScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _loadAvailableApps();
     // Cache statuses in background
     StatusHistory.cacheCurrentStatuses();
+  }
+
+  Future<void> _loadAvailableApps() async {
+    final apps = await getAvailableApps();
+    if (mounted && apps.isNotEmpty) {
+      setState(() {
+        _availableApps = apps;
+        _selectedApp = apps.first;
+      });
+    }
   }
 
   Future<void> _createAnchoredBanner(BuildContext context) async {
@@ -70,16 +84,20 @@ class _DashboardScreenState extends State<DashboardScreen>
     final isPhotos = _tabController.index == 0;
 
     final items = isPhotos
-        ? getStatusImages(_selectedApp)
-        : getStatusVideos(_selectedApp);
+        ? await getStatusImages(_selectedApp)
+        : await getStatusVideos(_selectedApp);
 
     if (items.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No ${isPhotos ? "photos" : "videos"} to download')),
+        SnackBar(
+            content:
+                Text('No ${isPhotos ? "photos" : "videos"} to download')),
       );
       return;
     }
 
+    if (!mounted) return;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -97,7 +115,6 @@ class _DashboardScreenState extends State<DashboardScreen>
       _createAnchoredBanner(context);
     }
 
-    final availableApps = getAvailableApps();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
@@ -118,13 +135,11 @@ class _DashboardScreenState extends State<DashboardScreen>
             ),
             systemOverlayStyle: SystemUiOverlayStyle.light,
             actions: [
-              // Bulk download button
               IconButton(
                 icon: Icon(Icons.download_for_offline),
                 tooltip: 'Download All',
                 onPressed: _bulkDownload,
               ),
-              // History button
               IconButton(
                 icon: Icon(Icons.history),
                 tooltip: 'Status History',
@@ -136,8 +151,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                   );
                 },
               ),
-              // App selector dropdown
-              if (availableApps.length > 1)
+              if (_availableApps.length > 1)
                 PopupMenuButton<String>(
                   icon: Icon(Icons.swap_horiz),
                   tooltip: 'Switch App',
@@ -146,13 +160,14 @@ class _DashboardScreenState extends State<DashboardScreen>
                       _selectedApp = value;
                     });
                   },
-                  itemBuilder: (context) => availableApps
+                  itemBuilder: (context) => _availableApps
                       .map((app) => PopupMenuItem(
                             value: app,
                             child: Row(
                               children: [
                                 if (app == _selectedApp)
-                                  Icon(Icons.check, size: 18, color: Colors.deepOrange),
+                                  Icon(Icons.check,
+                                      size: 18, color: Colors.deepOrange),
                                 if (app != _selectedApp) SizedBox(width: 18),
                                 SizedBox(width: 8),
                                 Text(getAppLabel(app)),
@@ -161,6 +176,15 @@ class _DashboardScreenState extends State<DashboardScreen>
                           ))
                       .toList(),
                 ),
+              // Settings: re-pick folder
+              IconButton(
+                icon: Icon(Icons.settings),
+                tooltip: 'Change Status Folder',
+                onPressed: () async {
+                  await SafDirectoryService.pickStatusDirectory(_selectedApp);
+                  setState(() {});
+                },
+              ),
             ],
             bottom: TabBar(
               controller: _tabController,
@@ -184,10 +208,10 @@ class _DashboardScreenState extends State<DashboardScreen>
 }
 
 class _BulkDownloadDialog extends StatefulWidget {
-  final List<String> items;
+  final List<StatusFile> items;
   final bool isPhotos;
 
-  _BulkDownloadDialog({required this.items, required this.isPhotos});
+  const _BulkDownloadDialog({required this.items, required this.isPhotos});
 
   @override
   _BulkDownloadDialogState createState() => _BulkDownloadDialogState();
@@ -204,12 +228,13 @@ class _BulkDownloadDialogState extends State<_BulkDownloadDialog> {
   }
 
   Future<void> _startDownload() async {
+    final files = widget.items;
     if (widget.isPhotos) {
-      await bulkSaveImages(widget.items, (done, total) {
+      await bulkSaveImages(files, (done, total) {
         if (mounted) setState(() => _done = done);
       });
     } else {
-      await bulkSaveVideos(widget.items, (done, total) {
+      await bulkSaveVideos(files, (done, total) {
         if (mounted) setState(() => _done = done);
       });
     }
@@ -229,8 +254,10 @@ class _BulkDownloadDialogState extends State<_BulkDownloadDialog> {
           ] else ...[
             Icon(Icons.check_circle, color: Colors.green, size: 48),
             SizedBox(height: 16),
-            Text('Downloaded $_done ${widget.isPhotos ? "photos" : "videos"}!',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(
+                'Downloaded $_done ${widget.isPhotos ? "photos" : "videos"}!',
+                style:
+                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         ],
       ),

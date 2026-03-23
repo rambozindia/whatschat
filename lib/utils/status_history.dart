@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
-import 'constants.dart';
-import 'status_directory_helper.dart';
+import 'package:numstatus/utils/constants.dart';
+import 'package:numstatus/services/saf_directory_service.dart';
+import 'package:numstatus/utils/status_directory_helper.dart';
 
 class StatusHistory {
   static Future<Directory> _getHistoryDir(String mediaType) async {
@@ -17,34 +18,31 @@ class StatusHistory {
   }
 
   static Future<void> cacheCurrentStatuses() async {
-    await _cacheMediaType('images', imageExtensions);
-    await _cacheMediaType('videos', videoExtensions);
+    try {
+      final apps = await getAvailableApps();
+      for (final appType in apps) {
+        await _cacheMediaForApp(appType, 'images', imageExtensions);
+        await _cacheMediaForApp(appType, 'videos', videoExtensions);
+      }
+    } catch (_) {}
   }
 
-  static Future<void> _cacheMediaType(
-      String mediaType, List<String> extensions) async {
+  static Future<void> _cacheMediaForApp(
+      String appType, String mediaType, List<String> extensions) async {
     final historyDir = await _getHistoryDir(mediaType);
     final existingFiles =
         historyDir.listSync().map((f) => p.basename(f.path)).toSet();
 
-    for (final appType in statusDirectories.keys) {
-      final dirs = getAvailableStatusDirs(appType);
-      for (final dir in dirs) {
-        try {
-          final files = dir
-              .listSync()
-              .where((item) => extensions
-                  .any((ext) => item.path.toLowerCase().endsWith(ext)))
-              .toList();
+    final files =
+        await SafDirectoryService.listFiles(appType, extensions);
 
-          for (final file in files) {
-            final fileName = p.basename(file.path);
-            if (!existingFiles.contains(fileName)) {
-              try {
-                await File(file.path)
-                    .copy('${historyDir.path}/$fileName');
-              } catch (_) {}
-            }
+    for (final file in files) {
+      if (!existingFiles.contains(file.displayName)) {
+        try {
+          final bytes = await SafDirectoryService.readFileBytes(file.uri);
+          if (bytes != null) {
+            await File('${historyDir.path}/${file.displayName}')
+                .writeAsBytes(bytes);
           }
         } catch (_) {}
       }
