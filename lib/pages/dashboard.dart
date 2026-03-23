@@ -106,6 +106,7 @@ class _DashboardScreenState extends State<DashboardScreen>
         length: 2,
         initialIndex: 0,
         child: Scaffold(
+          backgroundColor: isDark ? Colors.grey[850] : Colors.deepOrange,
           appBar: AppBar(
             title: Text("Status Downloader"),
             backgroundColor: Theme.of(context).appBarTheme.backgroundColor,

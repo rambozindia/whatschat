@@ -14,14 +14,6 @@ class aboutPage extends StatefulWidget {
 }
 
 class _aboutPageState extends State<aboutPage> {
-  final _menutextcolor = TextStyle(
-    color: Colors.black,
-    fontSize: 14.0,
-    fontWeight: FontWeight.w500,
-  );
-  final _iconcolor = new IconThemeData(
-    color: Color(0xff757575),
-  );
 
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
@@ -56,6 +48,15 @@ class _aboutPageState extends State<aboutPage> {
     final bgColor = isDark ? Colors.grey[850]! : Colors.deepOrange;
     final appState = MyApp.of(context);
 
+    final _menutextcolor = TextStyle(
+      color: isDark ? Colors.white : Colors.black,
+      fontSize: 14.0,
+      fontWeight: FontWeight.w500,
+    );
+    final _iconcolor = IconThemeData(
+      color: isDark ? Colors.white70 : Color(0xff757575),
+    );
+
     return Container(
       color: bgColor,
       child: Padding(
@@ -67,13 +68,18 @@ class _aboutPageState extends State<aboutPage> {
               padding: EdgeInsets.all(0),
               children: <Widget>[
                 UserAccountsDrawerHeader(
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.grey[800] : Colors.deepOrange,
+                  ),
                   accountName: Text(
                     "Number Status Download",
                     style: TextStyle(
                       fontSize: 20.0,
+                      color: Colors.white,
                     ),
                   ),
-                  accountEmail: Text("Easily Download Status & Chat"),
+                  accountEmail: Text("Easily Download Status & Chat",
+                      style: TextStyle(color: Colors.white70)),
                   currentAccountPicture: Image.asset('images/avatar.png'),
                 ),
                 // Dark Mode Toggle
@@ -82,10 +88,7 @@ class _aboutPageState extends State<aboutPage> {
                     data: _iconcolor,
                     child: Icon(isDark ? Icons.dark_mode : Icons.light_mode),
                   ),
-                  title: Text("Dark Mode",
-                      style: isDark
-                          ? _menutextcolor.copyWith(color: Colors.white)
-                          : _menutextcolor),
+                  title: Text("Dark Mode", style: _menutextcolor),
                   value: isDark,
                   onChanged: (value) {
                     appState?.themeNotifier.toggleTheme();

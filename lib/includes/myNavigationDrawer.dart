@@ -26,13 +26,18 @@ class MyNavigationDrawer extends StatelessWidget {
       padding: EdgeInsets.all(0),
       children: <Widget>[
         UserAccountsDrawerHeader(
+          decoration: BoxDecoration(
+            color: isDark ? Colors.grey[800] : Colors.deepOrange,
+          ),
           accountName: Text(
             "Welcome to Status Downloader",
             style: TextStyle(
               fontSize: 20.0,
+              color: Colors.white,
             ),
           ),
-          accountEmail: Text("Easily Download Status"),
+          accountEmail: Text("Easily Download Status",
+              style: TextStyle(color: Colors.white70)),
           currentAccountPicture: Image.asset('images/avatar.png'),
         ),
         ListTile(

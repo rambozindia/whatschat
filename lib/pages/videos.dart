@@ -22,7 +22,7 @@ class VideoListViewState extends State<VideoListView> {
     if (!hasAnyStatusDirs(widget.appType)) {
       return Scaffold(
         body: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[850] : Colors.deepOrange,
           child: Padding(
             padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
             child: Card(
@@ -48,7 +48,7 @@ class VideoListViewState extends State<VideoListView> {
     } else {
       return Scaffold(
         body: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[850] : Colors.deepOrange,
           child: Padding(
             padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
             child: Card(
@@ -143,7 +143,7 @@ class _VideoGridState extends State<VideoGrid> {
     }
 
     return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[850] : Colors.deepOrange,
       child: Padding(
         padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
         child: Card(

@@ -12,7 +12,7 @@ class GamezopCct extends StatelessWidget {
         appBar: AppBar(
           title: Text("Explore Games"),
           actions: <Widget>[],
-          backgroundColor: Colors.deepOrange,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           elevation: 50.0,
           leading: IconButton(
             icon: Icon(Icons.gamepad),
@@ -22,7 +22,7 @@ class GamezopCct extends StatelessWidget {
           systemOverlayStyle: SystemUiOverlayStyle.light,
         ),
         body: Container(
-            color: Colors.deepOrange,
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[850] : Colors.deepOrange,
             child: ListView(
               children: [
                 Padding(

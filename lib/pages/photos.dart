@@ -18,7 +18,7 @@ class PhotosState extends State<Photos> {
     if (!hasAnyStatusDirs(widget.appType)) {
       return Scaffold(
         body: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[850] : Colors.deepOrange,
           child: Padding(
             padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
             child: Card(
@@ -41,7 +41,7 @@ class PhotosState extends State<Photos> {
     if (imageList.isNotEmpty) {
       return Scaffold(
         body: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[850] : Colors.deepOrange,
           child: Padding(
             padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
             child: Card(
@@ -83,7 +83,7 @@ class PhotosState extends State<Photos> {
     } else {
       return Scaffold(
         body: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[850] : Colors.deepOrange,
           child: Padding(
             padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
             child: Card(

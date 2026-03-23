@@ -54,7 +54,7 @@ class _FileManagerWidgetState extends State<FileManagerWidget> {
                 await controller.goToParentDirectory();
               },
             ),
-            backgroundColor: Colors.deepOrange,
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           ),
           body: Container(
             margin: EdgeInsets.all(10),
