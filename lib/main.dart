@@ -1,35 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:whatschat/pages/gamezop_cct.dart';
-// import 'package:flutter_launch/flutter_launch.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:localstorage/localstorage.dart';
+import 'package:numstatus/pages/gamezop_cct.dart';
 
 import 'numbertochat.dart';
-import 'numberList.dart';
 import 'statusStartup.dart';
 import 'aboutPage.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+  await initLocalStorage();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
@@ -39,15 +31,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -61,12 +44,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
         bottomNavigationBar: CurvedNavigationBar(
           key: _bottomNavigationKey,
@@ -75,7 +52,6 @@ class _MyHomePageState extends State<MyHomePage> {
           items: <Widget>[
             Icon(Icons.add, size: 30),
             Icon(Icons.collections, size: 30),
-            // Icon(Icons.history, size: 30),
             Icon(Icons.gamepad, size: 30),
             Icon(Icons.perm_identity, size: 30),
           ],
@@ -96,45 +72,9 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             numberToChat(),
             statusStartup(),
-            // NumberList(),
             GamezopCct(),
             aboutPage(),
           ],
         ));
   }
-  // void whatsAppOpen() async {
-  //   await FlutterLaunch.launchWathsApp(
-  //       phone: "5534992016545", message: "Hello");
-  // }
 }
-
-checkpermission() async {
-  Map<Permission, PermissionStatus> statuses = await [
-    Permission.storage,
-  ].request();
-}
-
-Container SampleScreen = Container(
-  color: Colors.deepOrange,
-  child: Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text("Welcome".toString(), textScaleFactor: 5.0),
-        ElevatedButton(
-          child: Text('Set Permission'),
-          onPressed: () {
-            checkpermission();
-            // final CurvedNavigationBarState? navBarState =
-            //     _bottomNavigationKey.currentState;
-            // navBarState?.setPage(1);
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => numberToChat()),
-            // );
-          },
-        ),
-      ],
-    ),
-  ),
-);

@@ -1,12 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:whatschat/includes/myNavigationDrawer.dart';
-import 'package:whatschat/pages/about_us.dart';
-import 'package:whatschat/pages/dashboard.dart';
-import 'package:whatschat/pages/photos.dart';
-import 'package:whatschat/pages/videos.dart';
-
-// void main() => runApp(statusStartup());
+import 'package:numstatus/pages/dashboard.dart';
+import 'package:numstatus/pages/photos.dart';
+import 'package:numstatus/pages/videos.dart';
+import 'package:numstatus/pages/about_us.dart';
+import 'package:numstatus/includes/myNavigationDrawer.dart';
 
 class statusStartup extends StatefulWidget {
   @override
@@ -19,44 +18,38 @@ class _statusStartupState extends State<statusStartup> {
   Future<int>? _readwritePermissionChecker;
 
   Future<bool> checkReadPermission() async {
-    var status = await Permission.storage.status;
-    setState(() {
-      _readPermissionCheck = true;
-    });
-    switch (status) {
-      case PermissionStatus.denied:
-        return false;
-      case PermissionStatus.granted:
-        return true;
-      default:
-        return false;
+    if (Platform.isAndroid) {
+      final androidInfo = await Permission.storage.status;
+      setState(() {
+        _readPermissionCheck = true;
+      });
+      return androidInfo.isGranted;
     }
+    return true;
   }
 
   Future<bool> checkWritePermission() async {
-    var status = await Permission.manageExternalStorage.status;
-    setState(() {
-      _writePermissionCheck = true;
-    });
-    switch (status) {
-      case PermissionStatus.denied:
-        return false;
-      case PermissionStatus.granted:
-        return true;
-      default:
-        return false;
+    if (Platform.isAndroid) {
+      var status = await Permission.manageExternalStorage.status;
+      setState(() {
+        _writePermissionCheck = true;
+      });
+      return status.isGranted;
     }
+    return true;
   }
 
   Future<int> requestReadPermission() async {
     int output = 0;
-    if (await Permission.storage.request().isGranted) {
-      // Either the permission was already granted before or the user just granted it.
-      if (await Permission.manageExternalStorage.request().isGranted) {
-        output = 1;
+    if (Platform.isAndroid) {
+      // For Android 13+, request media permissions
+      if (await Permission.photos.request().isGranted ||
+          await Permission.storage.request().isGranted) {
+        if (await Permission.manageExternalStorage.request().isGranted) {
+          output = 1;
+        }
       }
     }
-
     return output;
   }
 
@@ -88,7 +81,7 @@ class _statusStartupState extends State<statusStartup> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'WhatsApp Status Downloader',
+      title: 'Status Downloader',
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
@@ -126,8 +119,8 @@ class _statusStartupState extends State<statusStartup> {
                                 });
                               },
                               style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                onPrimary: Colors.black,
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.black,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 40, vertical: 20),
                                 textStyle: TextStyle(fontSize: 20),

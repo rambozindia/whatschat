@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'pages/about_us.dart';
 
@@ -63,12 +63,12 @@ class _aboutPageState extends State<aboutPage> {
               children: <Widget>[
                 UserAccountsDrawerHeader(
                   accountName: Text(
-                    "Number to WhatsChat",
+                    "Number Status Download",
                     style: TextStyle(
                       fontSize: 20.0,
                     ),
                   ),
-                  accountEmail: Text("Easily Download WhatsApp Status & chat"),
+                  accountEmail: Text("Easily Download Status & Chat"),
                   currentAccountPicture: Image.asset('images/avatar.png'),
                 ),
                 ListTile(
@@ -92,9 +92,9 @@ class _aboutPageState extends State<aboutPage> {
                   ),
                   title: Text("Share with Friends", style: _menutextcolor),
                   onTap: () {
-                    // you can modify message if you want.
                     Share.share(
-                        "Hello, Good News\n\n*Download Anyone WhatsApp Status* \n\nDownload Your Contact's Status Photos\nDownload Your Contact's Video Status \n\n*Just Download this Application and You will be able to download other's Whatsapp photo and video Status* \n\n 👇👇👇👇👇 \nDownload Now\nhttps://play.google.com/store/apps/details?id=com.number.whatschat");
+                      "Hello, Good News\n\n*Download Anyone's Status* \n\nDownload Your Contact's Status Photos\nDownload Your Contact's Video Status \n\n*Just Download this Application and You will be able to download other's photo and video Status* \n\n \u{1F447}\u{1F447}\u{1F447}\u{1F447}\u{1F447} \nDownload Now\nhttps://play.google.com/store/apps/details?id=com.blueburn.numstatus",
+                    );
                   },
                 ),
                 ListTile(
@@ -104,13 +104,10 @@ class _aboutPageState extends State<aboutPage> {
                   ),
                   title: Text("Rate and Review", style: _menutextcolor),
                   onTap: () async {
-                    // you can update this link with your app link
-                    const url =
-                        'https://play.google.com/store/apps/details?id=com.number.whatschat';
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    } else {
-                      throw 'Could not open App';
+                    final url = Uri.parse(
+                        'https://play.google.com/store/apps/details?id=com.blueburn.numstatus');
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url, mode: LaunchMode.externalApplication);
                     }
                   },
                 ),
@@ -121,12 +118,9 @@ class _aboutPageState extends State<aboutPage> {
                   ),
                   title: Text("Privacy Policy", style: _menutextcolor),
                   onTap: () async {
-                    // add privacy policy url
-                    const url = 'https://www.blueburn.in/projects/';
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    } else {
-                      throw 'Could not open App';
+                    final url = Uri.parse('https://www.blueburn.in/projects/');
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url, mode: LaunchMode.externalApplication);
                     }
                   },
                 ),

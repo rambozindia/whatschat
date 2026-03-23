@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share/share.dart';
-import 'package:whatschat/pages/video_controller.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:numstatus/pages/video_controller.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayStatusVideo extends StatefulWidget {
@@ -54,7 +54,7 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
                       child: Column(
                         children: <Widget>[
                           Text(
-                            "Great, Saved in Gallary",
+                            "Great, Saved in Gallery",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
@@ -113,10 +113,8 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
                   label: Text(
                     'Save',
                     style: TextStyle(fontSize: 16.0),
-                  ), //`T
+                  ),
                   onPressed: () async {
-                    //_onLoading(true, "");
-
                     File originalVideoFile = File(widget.videoFile);
                     Directory? directory = await getExternalStorageDirectory();
                     if (!Directory(
@@ -132,11 +130,11 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
                     await originalVideoFile.copy(newFileName);
 
                     _onLoading(false,
-                        "If Video not available in gallary\n\nYou can find all videos at");
+                        "If Video not available in gallery\n\nYou can find all videos at");
                   },
                   icon: Icon(Icons.file_download),
                   style: ElevatedButton.styleFrom(
-                      primary: Colors.deepOrange,
+                      backgroundColor: Colors.deepOrange,
                       padding:
                           EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                       textStyle: TextStyle(fontSize: 20)),
@@ -146,14 +144,16 @@ class _PlayStatusVideoState extends State<PlayStatusVideo> {
                   label: Text(
                     'Share',
                     style: TextStyle(fontSize: 16.0),
-                  ), //`T
+                  ),
                   onPressed: () async {
-                    await Share.shareFiles([widget.videoFile],
-                        text: "Share from Number to WhatsChat");
+                    await Share.shareXFiles(
+                      [XFile(widget.videoFile)],
+                      text: "Share from Number Status Download",
+                    );
                   },
                   icon: Icon(Icons.share),
                   style: ElevatedButton.styleFrom(
-                      primary: Colors.deepOrange,
+                      backgroundColor: Colors.deepOrange,
                       padding:
                           EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                       textStyle: TextStyle(fontSize: 20)),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -13,11 +14,9 @@ class _AboutScreenState extends State<AboutScreen> {
   }
 
   _launchURL() async {
-    const url = 'https://blueburn.in';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not open App';
+    final url = Uri.parse('https://blueburn.in');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
     }
   }
 
@@ -39,8 +38,8 @@ class _AboutScreenState extends State<AboutScreen> {
           onPressed: () {
             Navigator.pop(context);
           },
-        ), //IconButton
-        brightness: Brightness.dark,
+        ),
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: Container(
         color: Colors.deepOrange,
@@ -50,7 +49,6 @@ class _AboutScreenState extends State<AboutScreen> {
             elevation: 5,
             child: ClipPath(
               child: ListView(children: <Widget>[
-                //Welcome and Balance Info
                 Container(
                   child: Container(
                     padding:
@@ -76,8 +74,8 @@ class _AboutScreenState extends State<AboutScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                            "Number to WhatsaChat"
-                            "\n\nNumber to WhatsChat app to send messages to any numbers those are not saved in your contacts.\n- How it works?\n1. Enter a number to which you are going to send message.\n2. Type your text message and tap on send button.\n3. This will take you to the your favourite chat window is created with given number.",
+                            "Number Status Download"
+                            "\n\nNumber Status Download app lets you send messages to any numbers not saved in your contacts.\n- How it works?\n1. Enter a number to which you are going to send message.\n2. Type your text message and tap on send button.\n3. This will take you to the chat window created with the given number.",
                             style: TextStyle(
                               fontSize: 18.0,
                               color: Colors.indigo,

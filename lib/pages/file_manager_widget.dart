@@ -9,29 +9,19 @@ class FileManagerWidget extends StatefulWidget {
   _FileManagerWidgetState createState() => _FileManagerWidgetState();
 }
 
-// class _FileManagerWidgetState extends State<FileManagerWidget> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-
-//     );
-//   }
-// }
-
 class _FileManagerWidgetState extends State<FileManagerWidget> {
   final FileManagerController controller = FileManagerController();
 
   @override
   Widget build(BuildContext context) {
-    // Creates a widget that registers a callback to veto attempts by the user to dismiss the enclosing
-    // or controllers the system's back button
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
         if (await controller.isRootDirectory()) {
-          return true;
+          Navigator.of(context).pop();
         } else {
           controller.goToParentDirectory();
-          return false;
         }
       },
       child: Scaffold(
@@ -85,35 +75,7 @@ class _FileManagerWidgetState extends State<FileManagerWidget> {
                         subtitle: subtitle(entity),
                         onTap: () async {
                           if (FileManager.isDirectory(entity)) {
-                            // open the folder
                             controller.openDirectory(entity);
-
-                            // delete a folder
-                            // await entity.delete(recursive: true);
-
-                            // rename a folder
-                            // await entity.rename("newPath");
-
-                            // Check weather folder exists
-                            // entity.exists();
-
-                            // get date of file
-                            // DateTime date = (await entity.stat()).modified;
-                          } else {
-                            // delete a file
-                            // await entity.delete();
-
-                            // rename a file
-                            // await entity.rename("newPath");
-
-                            // Check weather file exists
-                            // entity.exists();
-
-                            // get date of file
-                            // DateTime date = (await entity.stat()).modified;
-
-                            // get the size of the file
-                            // int size = (await entity.stat()).size;
                           }
                         },
                       ),
@@ -133,7 +95,6 @@ class _FileManagerWidgetState extends State<FileManagerWidget> {
         if (snapshot.hasData) {
           if (entity is File) {
             int size = snapshot.data!.size;
-
             return Text(
               "${FileManager.formatBytes(size)}",
             );
@@ -195,25 +156,25 @@ class _FileManagerWidgetState extends State<FileManagerWidget> {
               ListTile(
                   title: Text("Name"),
                   onTap: () {
-                    controller.sortedBy = SortBy.name;
+                    controller.sortBy(SortBy.name);
                     Navigator.pop(context);
                   }),
               ListTile(
                   title: Text("Size"),
                   onTap: () {
-                    controller.sortedBy = SortBy.size;
+                    controller.sortBy(SortBy.size);
                     Navigator.pop(context);
                   }),
               ListTile(
                   title: Text("Date"),
                   onTap: () {
-                    controller.sortedBy = SortBy.date;
+                    controller.sortBy(SortBy.date);
                     Navigator.pop(context);
                   }),
               ListTile(
                   title: Text("type"),
                   onTap: () {
-                    controller.sortedBy = SortBy.type;
+                    controller.sortBy(SortBy.type);
                     Navigator.pop(context);
                   }),
             ],
@@ -242,10 +203,8 @@ class _FileManagerWidgetState extends State<FileManagerWidget> {
                 ElevatedButton(
                   onPressed: () async {
                     try {
-                      // Create Folder
                       await FileManager.createFolder(
                           controller.getCurrentPath, folderName.text);
-                      // Open Created Folder
                       controller.setCurrentPath =
                           controller.getCurrentPath + "/" + folderName.text;
                     } catch (e) {}

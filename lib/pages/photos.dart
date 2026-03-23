@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:whatschat/pages/view_photo.dart';
+import 'package:numstatus/pages/view_photo.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 final Directory _photoDir =
@@ -36,7 +36,7 @@ class PhotosState extends State<Photos> {
               child: ClipPath(
                 child: Center(
                   child: Text(
-                    "Install WhatsApp\nYour Friend's Status will be available here.",
+                    "No Status Found\nYour Friend's Status will be available here.",
                     style: TextStyle(fontSize: 18.0),
                   ),
                 ),

@@ -2,27 +2,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:whatschat/pages/video_play.dart';
+import 'package:numstatus/pages/video_play.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 final Directory _videoDir =
-    new Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
+    Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
 
-final Directory _videoDir2 = new Directory(
+final Directory _videoDir2 = Directory(
     '/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-
-List<IMageClass> _list = [];
-
-BannerAd? _anchoredBanner;
-bool _loadingAnchoredBanner = false;
-
-final AdRequest request = AdRequest(
-  keywords: <String>['foo', 'bar'],
-  contentUrl: 'http://foo.com/bar.html',
-  nonPersonalizedAds: true,
-);
 
 class VideoListView extends StatefulWidget {
   @override
@@ -39,8 +27,8 @@ class VideoListViewState extends State<VideoListView> {
 
   @override
   Widget build(BuildContext context) {
-    if (!Directory("${_videoDir.path}").existsSync() &&
-        !Directory("${_videoDir2.path}").existsSync()) {
+    if (!Directory(_videoDir.path).existsSync() &&
+        !Directory(_videoDir2.path).existsSync()) {
       return Scaffold(
         body: Container(
           color: Colors.deepOrange,
@@ -51,7 +39,7 @@ class VideoListViewState extends State<VideoListView> {
               child: ClipPath(
                 child: Center(
                   child: Text(
-                    "Install WhatsApp\nYour Friend's Status will be available here.",
+                    "No Status Found\nYour Friend's Status will be available here.",
                     style: TextStyle(fontSize: 18.0),
                   ),
                 ),
@@ -61,7 +49,7 @@ class VideoListViewState extends State<VideoListView> {
         ),
       );
     } else {
-      if (Directory("${_videoDir2.path}").existsSync()) {
+      if (Directory(_videoDir2.path).existsSync()) {
         return Scaffold(
           body: VideoGrid(directory: _videoDir2),
         );
@@ -84,6 +72,10 @@ class VideoGrid extends StatefulWidget {
 }
 
 class _VideoGridState extends State<VideoGrid> {
+  List<IMageClass> _list = [];
+  BannerAd? _anchoredBanner;
+  bool _loadingAnchoredBanner = false;
+
   _getImage2(videoPathUrl) async {
     final fileName = await VideoThumbnail.thumbnailFile(
       video: videoPathUrl,
@@ -95,6 +87,8 @@ class _VideoGridState extends State<VideoGrid> {
 
     return fileName;
   }
+
+  static final AdRequest request = AdRequest();
 
   Future<void> _createAnchoredBanner(BuildContext context) async {
     final AnchoredAdaptiveBannerAdSize? size =
@@ -120,8 +114,6 @@ class _VideoGridState extends State<VideoGrid> {
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           ad.dispose();
         },
-        // onAdOpened: (Ad ad) => print('$BannerAd onAdOpened.'),
-        // onAdClosed: (Ad ad) => print('$BannerAd onAdClosed.'),
       ),
     );
     return banner.load();
@@ -146,27 +138,17 @@ class _VideoGridState extends State<VideoGrid> {
         .where((item) => item.endsWith(".mp4"))
         .toList(growable: false);
 
-    void _getData() {
-      for (int i = 0; i < videoList.length; i++) {
-        var image = IMageClass();
-
-        if (i != 0) {
-          if (i % 4 == 0) {
-            image.type = "GoogleAd";
-          } else {
-            image.type = "";
-            image.images = videoList[i];
-          }
-          _list.add(image);
-        } else {
-          image.type = "";
-          image.images = videoList[i];
-          _list.add(image);
-        }
+    _list = [];
+    for (int i = 0; i < videoList.length; i++) {
+      var image = IMageClass();
+      if (i != 0 && i % 4 == 0) {
+        image.type = "GoogleAd";
+      } else {
+        image.type = "";
+        image.images = videoList[i];
       }
+      _list.add(image);
     }
-
-    _getData();
 
     Widget _getAdContainer() {
       if (_anchoredBanner != null)
@@ -175,137 +157,120 @@ class _VideoGridState extends State<VideoGrid> {
         return Container();
     }
 
-    if (videoList != null) {
-      if (videoList.length > 0) {
-        return Container(
+    if (videoList.length > 0) {
+      return Container(
+        color: Colors.deepOrange,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
+          child: Card(
+            elevation: 5,
+            child: ClipPath(
+              child: MasonryGridView.count(
+                crossAxisSpacing: 3.0,
+                mainAxisSpacing: 3.0,
+                itemCount: videoList.length,
+                physics: ScrollPhysics(),
+                itemBuilder: (context, index) {
+                  if (index < _list.length && _list[index].type != "GoogleAd")
+                    return Container(
+                      padding: EdgeInsets.all(10.0),
+                      child: InkWell(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  PlayStatusVideo(videoList[index])),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomLeft,
+                              end: Alignment.topRight,
+                              stops: [0.1, 0.3, 0.5, 0.7, 0.9],
+                              colors: [
+                                Color(0xffb7d8cf),
+                                Color(0xffb7d8cf),
+                                Color(0xffb7d8cf),
+                                Color(0xffb7d8cf),
+                                Color(0xffb7d8cf),
+                              ],
+                            ),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8)),
+                          ),
+                          child: FutureBuilder(
+                              future: _getImage2(videoList[index]),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  if (snapshot.hasData) {
+                                    return Column(children: <Widget>[
+                                      Hero(
+                                        tag: videoList[index],
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PlayStatusVideo(
+                                                          videoList[index])),
+                                            );
+                                          },
+                                          child: Image.file(
+                                            File(snapshot.data.toString()),
+                                            height: 155,
+                                          ),
+                                        ),
+                                      ),
+                                    ]);
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                } else {
+                                  return Hero(
+                                    tag: videoList[index],
+                                    child: Container(
+                                      height: 170,
+                                      child: Image.asset(
+                                          "images/video_loader.gif"),
+                                    ),
+                                  );
+                                }
+                              }),
+                        ),
+                      ),
+                    );
+                  else
+                    return _getAdContainer();
+                },
+                crossAxisCount: 2,
+              ),
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Scaffold(
+        body: Container(
           color: Colors.deepOrange,
           child: Padding(
             padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
             child: Card(
               elevation: 5,
               child: ClipPath(
-                child: MasonryGridView.count(
-                  crossAxisSpacing: 3.0,
-                  mainAxisSpacing: 3.0,
-                  itemCount: videoList.length,
-                  physics: ScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    if (_list[index].type != "GoogleAd")
-                      return Container(
-                        padding: EdgeInsets.all(10.0),
-                        child: InkWell(
-                          onTap: () => Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) =>
-                                    new PlayStatusVideo(videoList[index])),
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                // Where the linear gradient begins and ends
-                                begin: Alignment.bottomLeft,
-                                end: Alignment.topRight,
-                                // Add one stop for each color. Stops should increase from 0 to 1
-                                stops: [0.1, 0.3, 0.5, 0.7, 0.9],
-                                colors: [
-                                  // Colors are easy thanks to Flutter's Colors class.
-                                  Color(0xffb7d8cf),
-                                  Color(0xffb7d8cf),
-                                  Color(0xffb7d8cf),
-                                  Color(0xffb7d8cf),
-                                  Color(0xffb7d8cf),
-                                ],
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                            ),
-                            child: FutureBuilder(
-                                future: _getImage2(videoList[index]),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    if (snapshot.hasData) {
-                                      return Column(children: <Widget>[
-                                        Hero(
-                                          tag: videoList[index],
-                                          child: InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                new MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        new PlayStatusVideo(
-                                                            videoList[index])),
-                                              );
-                                            },
-                                            child: Image.file(
-                                              File(snapshot.data.toString()),
-                                              height: 155,
-                                            ),
-                                          ),
-                                        ),
-                                      ]);
-                                    } else {
-                                      return Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    }
-                                  } else {
-                                    return Hero(
-                                      tag: videoList[index],
-                                      child: Container(
-                                        height: 170,
-                                        child: Image.asset(
-                                            "images/video_loader.gif"),
-                                      ),
-                                    );
-                                  }
-                                }),
-                            //new cod
-                          ),
-                        ),
-                      );
-                    else
-                      return _getAdContainer();
-                  },
-                  crossAxisCount: 2,
-                  // staggeredTileBuilder: (int index) {
-                  //   if (_list[index].type != "GoogleAd")
-                  //     return StaggeredTile.count(1, 1);
-                  //   else
-                  //     return StaggeredTile.count(2, 1);
-                  //   // return StaggeredTile.count(1, 1);
-                  // },
-                ),
-              ),
-            ),
-          ),
-        );
-      } else {
-        return Scaffold(
-          body: Container(
-            color: Colors.deepOrange,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
-              child: Card(
-                elevation: 5,
-                child: ClipPath(
-                  child: Center(
-                    child: Text(
-                      "Sorry, No Videos Found.",
-                      style: TextStyle(fontSize: 18.0),
-                    ),
+                child: Center(
+                  child: Text(
+                    "Sorry, No Videos Found.",
+                    style: TextStyle(fontSize: 18.0),
                   ),
                 ),
               ),
             ),
           ),
-        );
-      }
-    } else {
-      return Center(
-        child: CircularProgressIndicator(),
+        ),
       );
     }
   }
@@ -326,7 +291,6 @@ String getBannerAdUnitId() {
 }
 
 String getNativedUnitId() {
-  //'ca-app-pub-5924361002999470/4345357040'  on admob for native
   if (Platform.isIOS) {
     return 'ca-app-pub-5924361002999470/4345357040';
   } else if (Platform.isAndroid) {

@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:share/share.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ViewPhotos extends StatefulWidget {
   final String imgPath;
@@ -55,7 +55,7 @@ class _ViewPhotosState extends State<ViewPhotos> {
                       child: Column(
                         children: <Widget>[
                           Text(
-                            "Great, Saved in Gallary",
+                            "Great, Saved in Gallery",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
@@ -112,33 +112,20 @@ class _ViewPhotosState extends State<ViewPhotos> {
               ElevatedButton.icon(
                 label: Text('Download', style: TextStyle(fontSize: 16.0)),
                 onPressed: () async {
-                  // _onLoading(true, "");
-//                File originalImageFile1 = File(widget.imgPath);
-//
-//                Directory directory = await getExternalStorageDirectory();
-//                if(!Directory("${directory.path}/Downloaded Status/Images").existsSync()){
-//                  Directory("${directory.path}/Downloaded Status/Images").createSync(recursive: true);
-//                }
-//                String path = directory.path;
-//                String curDate = DateTime.now().toString();
-//                String newFileName = "$path/Downloaded Status/Images/IMG-$curDate.jpg";
-//                print(newFileName);
-//                await originalImageFile1.copy(newFileName);
-
                   Uri myUri = Uri.parse(widget.imgPath);
                   File originalImageFile = new File.fromUri(myUri);
                   Uint8List? bytes;
                   await originalImageFile.readAsBytes().then((value) {
                     bytes = Uint8List.fromList(value);
                   }).catchError((onError) {});
-                  final result = await ImageGallerySaver.saveImage(
+                  final result = await ImageGallerySaverPlus.saveImage(
                       Uint8List.fromList(bytes!));
                   _onLoading(false,
-                      "If Image not available in gallary\n\nYou can find all images at");
+                      "If Image not available in gallery\n\nYou can find all images at");
                 },
                 icon: Icon(Icons.file_download),
                 style: ElevatedButton.styleFrom(
-                    primary: Colors.deepOrange,
+                    backgroundColor: Colors.deepOrange,
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                     textStyle: TextStyle(fontSize: 20)),
               ),
@@ -147,14 +134,16 @@ class _ViewPhotosState extends State<ViewPhotos> {
                 label: Text(
                   'Share',
                   style: TextStyle(fontSize: 16.0),
-                ), //`T
+                ),
                 onPressed: () async {
-                  await Share.shareFiles([widget.imgPath],
-                      text: "Share from Number to WhatsChat");
+                  await Share.shareXFiles(
+                    [XFile(widget.imgPath)],
+                    text: "Share from Number Status Download",
+                  );
                 },
                 icon: Icon(Icons.share),
                 style: ElevatedButton.styleFrom(
-                    primary: Colors.deepOrange,
+                    backgroundColor: Colors.deepOrange,
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                     textStyle: TextStyle(fontSize: 20)),
               ),

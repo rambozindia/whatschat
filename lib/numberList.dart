@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,74 +10,72 @@ class NumberList extends StatefulWidget {
   NumberList({Key? key}) : super(key: key);
 
   @override
-  _MyNumberListState createState() => new _MyNumberListState();
+  _MyNumberListState createState() => _MyNumberListState();
 }
 
 class _MyNumberListState extends State<NumberList> {
-  final LocalStorage storage = new LocalStorage('todo_app.json');
   bool initialized = false;
   var mobNumbers = [];
 
-  _clearStorage() async {
-    await storage.clear();
-
+  _clearStorage() {
+    localStorage.clear();
     setState(() {
-      mobNumbers = storage.getItem('numbers') ?? [];
+      mobNumbers = [];
     });
   }
 
-  _refreshStorage() async {
+  _refreshStorage() {
     setState(() {
-      mobNumbers = json.decode(storage.getItem('numbers')) ?? [];
+      var jsonData = localStorage.getItem('numbers');
+      if (jsonData != null) {
+        mobNumbers = json.decode(jsonData) ?? [];
+      } else {
+        mobNumbers = [];
+      }
     });
   }
 
   _sendMessage(contactNumber) async {
     if (initialized) {
-      if (await canLaunch(url(contactNumber, ""))) {
-        await launch(url(contactNumber, ""));
+      final uri = Uri.parse(buildUrl(contactNumber, ""));
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
       }
     }
-    //  FlutterOpenWhatsapp.sendSingleMessage(contactNumber, "");
   }
 
-  // String url2(phone, message) {
-  //   if (Platform.isIOS) {
-  //     return "whatsapp://wa.me/" + phone + "/?text=${Uri.encodeFull(message)}";
-  //   } else {
-  //     return "whatsapp://send?phone=" +
-  //         phone +
-  //         "&text=${Uri.encodeFull(message)}";
-  //   }
-  // }
-  String url(phone, message) {
+  String buildUrl(String phone, String message) {
     if (Platform.isAndroid) {
-      // add the [https]
-      return "https://wa.me/" +
-          phone +
-          "/?text=${Uri.parse(message)}"; // new line
+      return "https://wa.me/$phone/?text=${Uri.encodeComponent(message)}";
     } else {
-      // add the [https]
-      return "https://api.whatsapp.com/send?phone=" +
-          phone +
-          "&text=${Uri.parse(message)}"; // new line
+      return "https://api.whatsapp.com/send?phone=$phone&text=${Uri.encodeComponent(message)}";
     }
   }
 
+  @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    if (!initialized) {
+      var jsonData = localStorage.getItem('numbers');
+      if (jsonData != null) {
+        var parsedJson = json.decode(jsonData) ?? [];
+        mobNumbers.addAll(parsedJson);
+      }
+      initialized = true;
+    }
+
+    return Scaffold(
+      appBar: AppBar(
         title: Text("Recent Numbers"),
-        actions: <Widget>[], //<Widget>[]
+        actions: <Widget>[],
         backgroundColor: Colors.deepOrange,
         elevation: 50.0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           tooltip: 'Menu Icon',
           onPressed: () => Navigator.of(context).pop(),
-        ), //IconButton
-        brightness: Brightness.dark,
-      ), //AppBar
+        ),
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+      ),
       body: Container(
         color: Colors.deepOrange,
         child: Padding(
@@ -95,97 +92,77 @@ class _MyNumberListState extends State<NumberList> {
                       children: <Widget>[
                         Expanded(
                           flex: 1,
-                          child: FutureBuilder(
-                            future: storage.ready,
-                            builder:
-                                (BuildContext context, AsyncSnapshot snapshot) {
-                              if (snapshot.data == null) {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-
-                              if (!initialized) {
-                                var jsonData =
-                                    storage.getItem('numbers').toString();
-                                var parsedJson = json.decode(jsonData) ?? [];
-                                mobNumbers.addAll(parsedJson);
-                                initialized = true;
-                              }
-                              return ListView.separated(
-                                padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
-                                itemCount: mobNumbers.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return GestureDetector(
-                                      child: Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              10, 0, 10, 0),
-                                          height: 50,
-                                          color: Colors.orange,
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: Align(
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    child: Text(
-                                                        mobNumbers[index]
-                                                            ['mob'])),
-                                              ),
-                                              Align(
+                          child: ListView.separated(
+                            padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+                            itemCount: mobNumbers.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return GestureDetector(
+                                  child: Container(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          10, 0, 10, 0),
+                                      height: 50,
+                                      color: Colors.orange,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Align(
                                                 alignment:
-                                                    Alignment.centerRight,
-                                                child: Row(
-                                                  children: [
-                                                    Align(
-                                                      alignment:
-                                                          Alignment.centerRight,
-                                                      child: IconButton(
-                                                        icon: Icon(Icons.send),
-                                                        tooltip: 'Whatsapp',
-                                                        onPressed: () {
-                                                          // _sendMessage(
-                                                          //     mobNumbers[index]
-                                                          //         ['mob']);
-                                                          launch(url(
-                                                              mobNumbers[index]
+                                                    Alignment.centerLeft,
+                                                child: Text(
+                                                    mobNumbers[index]
+                                                        ['mob'])),
+                                          ),
+                                          Align(
+                                            alignment:
+                                                Alignment.centerRight,
+                                            child: Row(
+                                              children: [
+                                                Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: IconButton(
+                                                    icon: Icon(Icons.send),
+                                                    tooltip: 'Send Message',
+                                                    onPressed: () {
+                                                      launchUrl(
+                                                          Uri.parse(buildUrl(
+                                                              mobNumbers[
+                                                                      index]
                                                                   ['mob'],
-                                                              ""));
-                                                        },
-                                                      ),
-                                                    ),
-                                                    IconButton(
-                                                      icon: Icon(Icons.call),
-                                                      tooltip: 'call',
-                                                      onPressed: () {
-                                                        launch('tel:+' +
-                                                            mobNumbers[index]
-                                                                ['mob']);
-                                                      },
-                                                    ),
-                                                    IconButton(
-                                                      icon: Icon(Icons.sms),
-                                                      tooltip: 'Message',
-                                                      onPressed: () {
-                                                        launch('sms:+' +
-                                                            mobNumbers[index]
-                                                                ['mob']);
-                                                      },
-                                                    ),
-                                                  ],
+                                                              "")),
+                                                          mode: LaunchMode
+                                                              .externalApplication);
+                                                    },
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          )),
-                                      onTap: () {
-                                        _sendMessage(mobNumbers[index]['mob']);
-                                      });
-                                },
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        const Divider(),
-                              );
+                                                IconButton(
+                                                  icon: Icon(Icons.call),
+                                                  tooltip: 'call',
+                                                  onPressed: () {
+                                                    launchUrl(Uri.parse(
+                                                        'tel:+${mobNumbers[index]['mob']}'));
+                                                  },
+                                                ),
+                                                IconButton(
+                                                  icon: Icon(Icons.sms),
+                                                  tooltip: 'Message',
+                                                  onPressed: () {
+                                                    launchUrl(Uri.parse(
+                                                        'sms:+${mobNumbers[index]['mob']}'));
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                                  onTap: () {
+                                    _sendMessage(mobNumbers[index]['mob']);
+                                  });
                             },
+                            separatorBuilder:
+                                (BuildContext context, int index) =>
+                                    const Divider(),
                           ),
                         ),
                         ListTile(
@@ -201,7 +178,7 @@ class _MyNumberListState extends State<NumberList> {
                                   label: Text('Clear'),
                                   onPressed: _clearStorage,
                                   style: ElevatedButton.styleFrom(
-                                      primary: Colors.deepOrange,
+                                      backgroundColor: Colors.deepOrange,
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 25, vertical: 10),
                                       textStyle: TextStyle(fontSize: 20)),
@@ -218,7 +195,7 @@ class _MyNumberListState extends State<NumberList> {
                                   label: Text('Refresh'),
                                   onPressed: _refreshStorage,
                                   style: ElevatedButton.styleFrom(
-                                      primary: Colors.deepOrange,
+                                      backgroundColor: Colors.deepOrange,
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 25, vertical: 10),
                                       textStyle: TextStyle(fontSize: 20)),

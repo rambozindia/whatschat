@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:localstorage/localstorage.dart';
@@ -16,21 +17,15 @@ class numberToChat extends StatefulWidget {
   _numberToChatState createState() => _numberToChatState();
 }
 
-const String testDevice = '23A44FB0C82D65578152895CA43B5854';
 const int maxFailedLoadAttempts = 3;
 
 class _numberToChatState extends State<numberToChat> {
   final _formKey = GlobalKey<FormState>();
   final contactNumber = TextEditingController();
   final message = TextEditingController();
-  final LocalStorage storage = new LocalStorage('todo_app.json');
   int countrycd = 91;
 
-  static final AdRequest request = AdRequest(
-    keywords: <String>['foo', 'bar'],
-    contentUrl: 'http://foo.com/bar.html',
-    nonPersonalizedAds: true,
-  );
+  static final AdRequest request = AdRequest();
 
   InterstitialAd? _interstitialAd;
   int _numInterstitialLoadAttempts = 0;
@@ -41,7 +36,6 @@ class _numberToChatState extends State<numberToChat> {
   @override
   void initState() {
     super.initState();
-
     _createInterstitialAd();
   }
 
@@ -71,8 +65,6 @@ class _numberToChatState extends State<numberToChat> {
       return;
     }
     _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-      // onAdShowedFullScreenContent: (InterstitialAd ad) =>
-      //     print('ad onAdShowedFullScreenContent.'),
       onAdDismissedFullScreenContent: (InterstitialAd ad) {
         _sendMessage();
         ad.dispose();
@@ -112,8 +104,6 @@ class _numberToChatState extends State<numberToChat> {
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           ad.dispose();
         },
-        // onAdOpened: (Ad ad) => print('$BannerAd onAdOpened.'),
-        // onAdClosed: (Ad ad) => print('$BannerAd onAdClosed.'),
       ),
     );
     return banner.load();
@@ -125,11 +115,14 @@ class _numberToChatState extends State<numberToChat> {
 
   _addItem(String mobileNumber) {
     setState(() {
-      var jsonData = storage.getItem('numbers').toString();
-      var parsedJson = json.decode(jsonData) ?? [];
+      var jsonData = localStorage.getItem('numbers');
+      List parsedJson = [];
+      if (jsonData != null) {
+        parsedJson = json.decode(jsonData) ?? [];
+      }
       var newData = {'mob': mobileNumber};
       parsedJson.add(newData);
-      storage.setItem('numbers', json.encode(parsedJson).toString());
+      localStorage.setItem('numbers', json.encode(parsedJson));
     });
   }
 
@@ -137,47 +130,26 @@ class _numberToChatState extends State<numberToChat> {
     setState(() {
       _addItem(countrycd.toString() + contactNumber.text);
     });
-    // FlutterOpenWhatsapp.sendSingleMessage(
-    //     countrycd.toString() + contactNumber.text, message.text);
 
-    if (await canLaunch(
-        url(countrycd.toString() + contactNumber.text, message.text))) {
-      await launch(
-          url(countrycd.toString() + contactNumber.text, message.text));
-      // await launch(
-      //     url2(countrycd.toString() + contactNumber.text, message.text));
+    final uri = Uri.parse(
+        buildUrl(countrycd.toString() + contactNumber.text, message.text));
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
   covid_certificate() async {
-    if (await canLaunch(url("919013151515", "Main Menu"))) {
-      await launch(url("919013151515", "Main Menu"));
-      // await launch(
-      //     url2(countrycd.toString() + contactNumber.text, message.text));
+    final uri = Uri.parse(buildUrl("919013151515", "Main Menu"));
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
-  // String url2(phone, message) {
-  //   if (Platform.isIOS) {
-  //     return "whatsapp://wa.me/" + phone + "/?text=${Uri.encodeFull(message)}";
-  //   } else {
-  //     return "whatsapp://send?phone=" +
-  //         phone +
-  //         "&text=${Uri.encodeFull(message)}";
-  //   }
-  // }
-
-  String url(phone, message) {
+  String buildUrl(String phone, String message) {
     if (Platform.isAndroid) {
-      // add the [https]
-      return "https://wa.me/" +
-          phone +
-          "/?text=${Uri.parse(message)}"; // new line
+      return "https://wa.me/$phone/?text=${Uri.encodeComponent(message)}";
     } else {
-      // add the [https]
-      return "https://api.whatsapp.com/send?phone=" +
-          phone +
-          "&text=${Uri.parse(message)}"; // new line
+      return "https://api.whatsapp.com/send?phone=$phone&text=${Uri.encodeComponent(message)}";
     }
   }
 
@@ -185,17 +157,17 @@ class _numberToChatState extends State<numberToChat> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Number to WhatsChat"),
-          actions: <Widget>[], //<Widget>[]
+          title: Text("Number Status Download"),
+          actions: <Widget>[],
           backgroundColor: Colors.deepOrange,
           elevation: 50.0,
           leading: IconButton(
             icon: Icon(Icons.shield),
             tooltip: 'Menu Icon',
             onPressed: () {},
-          ), //IconButton
-          brightness: Brightness.dark,
-        ), //AppBar
+          ),
+          systemOverlayStyle: SystemUiOverlayStyle.light,
+        ),
         body: _getMain());
   }
 
@@ -249,14 +221,10 @@ class _numberToChatState extends State<numberToChat> {
                                 children: <Widget>[
                                   CountryCodePicker(
                                     onChanged: _onCountryChange,
-                                    // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
                                     initialSelection: 'IN',
                                     favorite: ['+91', 'IN'],
-                                    // optional. Shows only country name and flag
                                     showCountryOnly: false,
-                                    // optional. Shows only country name and flag when popup is closed.
                                     showOnlyCountryWhenClosed: false,
-                                    // optional. aligns the flag and the Text left
                                     alignLeft: false,
                                   ),
                                   Expanded(
@@ -298,14 +266,14 @@ class _numberToChatState extends State<numberToChat> {
                               Padding(
                                 padding: EdgeInsets.only(top: 10),
                                 child: ElevatedButton(
-                                  child: Text('Message on WhatsApp'),
+                                  child: Text('Send Message'),
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
                                       _showInterstitialAd();
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
-                                      primary: Colors.deepOrange,
+                                      backgroundColor: Colors.deepOrange,
                                       textStyle: TextStyle(fontSize: 20),
                                       minimumSize: Size(double.infinity, 50)),
                                 ),
@@ -314,7 +282,7 @@ class _numberToChatState extends State<numberToChat> {
                                 alignment: Alignment(0, 1.0),
                                 child: Padding(
                                     padding: EdgeInsets.all(20),
-                                    child: Text("Made with ❤️ in India")),
+                                    child: Text("Made with \u2764\uFE0F in India")),
                               ),
                               Container(
                                 height: 100,
@@ -367,7 +335,6 @@ String getBannerAdUnitId() {
 }
 
 String getNativedUnitId() {
-  //'ca-app-pub-5924361002999470/4345357040'  on admob for native
   if (Platform.isIOS) {
     return 'ca-app-pub-5924361002999470/4345357040';
   } else if (Platform.isAndroid) {

@@ -1,4 +1,4 @@
-package com.number.whatschat
+package com.blueburn.numstatus
 
 import io.flutter.embedding.android.FlutterActivity
 
